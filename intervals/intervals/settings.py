@@ -142,5 +142,9 @@ REST_FRAMEWORK = {
 }
 
 JWT_AUTH = {
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'mysite.utils.my_jwt_response_handler'
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'intervals.utils.my_jwt_response_handler'
 }
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+)

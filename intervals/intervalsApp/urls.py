@@ -1,8 +1,7 @@
 from django.urls import path
-from intervalsApp import views
-from .views import UserList
+from .views import current_user, UserList
 
 urlpatterns = [
-    path('create_user/', views.create_user),
+    path('current_user/', current_user),
     path('users/', UserList.as_view())
 ]

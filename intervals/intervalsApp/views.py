@@ -9,7 +9,7 @@ from .serializers import UserSerializer, UserSerializerWithToken
 
 
 @api_view(['POST', 'GET'])
-def create_user(request):
+def current_user(request):
     if request.method == 'POST':
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():

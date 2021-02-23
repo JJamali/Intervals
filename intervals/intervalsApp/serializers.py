@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import User
 from .models import IntervalsProfile
-from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(required=True)
+    profile = ProfileSerializer(required=False)
 
     class Meta:
         model = User
@@ -19,14 +19,14 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {'write_only': True}}
 
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile')
+        #  profile_data = validated_data.pop('profile')
         password = validated_data.pop('password')
         # Create user
         user = User.objects.create(**validated_data)
         user.set_password(password)
         user.save()
         # Create profile
-        IntervalsProfile.objects.create(user=user, **profile_data)
+        IntervalsProfile.objects.create(user=user, level=0, score=0)  # placeholder level and score, **profile_data should be used later
 
         return user
 
@@ -35,13 +35,13 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True)
 
-    def get_token(self, obj):
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+    def get_token(self, user):
+        refresh = RefreshToken.for_user(user)
 
-        payload = jwt_payload_handler(obj)
-        token = jwt_encode_handler(payload)
-        return token
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
