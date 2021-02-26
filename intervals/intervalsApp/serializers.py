@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import User
 from .models import IntervalsProfile
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -19,7 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {'write_only': True}}
 
     def create(self, validated_data):
-        #  profile_data = validated_data.pop('profile')
+        profile_data = validated_data.pop('profile')
         password = validated_data.pop('password')
         # Create user
         user = User.objects.create(**validated_data)
@@ -54,3 +56,19 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('token', 'username', 'password')
+
+
+# Allows for extraction of other important information along with token e.g. user information
+# Encodes non-username/password information in the access token
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+    # Customize the JWT response (the response, not the token) to include user information
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['username'] = self.user.username
+
+        return data
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

@@ -42,21 +42,12 @@ class App extends Component {
       .then(res => res.json())
       .then(json => {
         console.log(json);
-        localStorage.setItem('token', json.token);
+        localStorage.setItem('token', json.token); // Sets token
         this.setState({
+          username: json.username,
           logged_in: true,
           displayed_form: '',
         });
-
-        fetch('http://localhost:8000/api/intervals/current_user/', { // Get user data
-          headers: {
-            Authorization: `JWT ${localStorage.getItem('token')}`
-          }
-        })
-          .then(res => res.json())
-          .then(json => {
-            this.setState({ username: json.username });
-          });
       });
   };
 
