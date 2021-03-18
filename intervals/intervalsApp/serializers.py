@@ -72,3 +72,12 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+# Quiz section
+
+class QuestionSerializer(serializers.Serializer):
+
+    question = serializers.CharField(max_length=20)
+    answers = serializers.ListField(child=serializers.CharField(max_length=20))
+    correct_answer = serializers.CharField(max_length=20)
