@@ -4,6 +4,7 @@ from .models import IntervalsProfile
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from .question_generator import Question
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -76,8 +77,3 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 # Quiz section
 
-class QuestionSerializer(serializers.Serializer):
-
-    question = serializers.CharField(max_length=20)
-    answers = serializers.ListField(child=serializers.CharField(max_length=20))
-    correct_answer = serializers.CharField(max_length=20)

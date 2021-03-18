@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, UserSerializerWithToken
-from .question_generator import create_random_question
+from .question_generator import create_random_question, QuestionSerializer
 
 
 # current_user handles requests pertaining to the current user
@@ -48,9 +48,22 @@ def question(request):
         question_data = create_random_question()
         return Response(question_data, status=status.HTTP_201_CREATED)
 
-# Return result
-def answer_check(request):
-    if request.method == 'GET':
-        # Backend sends frontend correct guess
-        pass
 
+# Return result
+@api_view(['POST'])
+def answer_check(request):
+
+    if request.method == 'POST':
+        # Backend sends frontend correct guess
+        print(request.data)
+        data = request.data["question"]
+        guess = request.data["guess"]
+        serializer = QuestionSerializer(data=data)
+        if serializer.is_valid():
+            question = serializer.save()
+
+            if question.correct_answer == guess:
+                return Response({"correct": True, "correct_answer": question.correct_answer}, status=status.HTTP_200_OK)
+
+            else:
+                return Response({"correct": False, "correct_answer": question.correct_answer}, status=status.HTTP_200_OK)
