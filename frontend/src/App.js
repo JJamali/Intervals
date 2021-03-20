@@ -9,9 +9,10 @@ class App extends Component {
     super(props);
     this.state = {
       displayed_form: '',
-      logged_in: localStorage.getItem('token') ? true : false,
+      logged_in: false,//localStorage.getItem('token') ? true : false
       username: '',
-      question:''
+      question:'',
+      user: {profile: {}},
     };
   }
 
@@ -24,7 +25,7 @@ class App extends Component {
       })
         .then(res => res.json())
         .then(json => {
-          this.setState({ username: json.username });
+          this.setState({ username: json.user.username });
         });
     }
   }
@@ -45,7 +46,8 @@ class App extends Component {
         console.log(json);
         this.setState({jwt_token: json.access, jwt_token_refresh: json.refresh}); // Sets token
         this.setState({
-          username: json.username,
+          user: json.user,
+          username: json.user.username,
           logged_in: true,
           displayed_form: '',
         });
@@ -65,6 +67,7 @@ class App extends Component {
       .then(json => {
         this.setState({jwt_token: json.token}); // Sets token
         this.setState({
+          user: json.user,
           logged_in: true,
           displayed_form: '',
           username: json.username
@@ -152,15 +155,17 @@ class App extends Component {
         <form onSubmit={this.get_question}>
           <input type="submit" value="Get question" />
         </form>
+        <div>
+          Total correct: {this.state.user.profile.total_correct}
 
+          Total answered: {this.state.user.profile.total_completed}
+        </div>
 
         <form onSubmit={this.answer_check}>
           Question: {this.state.question.question}
-          <input type="text" value={this.state.guess} name="guess" onChange={this.handle_guess_change} />
-        <input type="submit" value="Submit" />
-      </form>
-
-
+          <input type="text" name="guess" onChange={this.handle_guess_change} />
+          <input type="submit" value="Submit" />
+        </form>
       </div>
     );
   }

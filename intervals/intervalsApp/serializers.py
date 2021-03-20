@@ -10,7 +10,7 @@ from .question_generator import Question
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = IntervalsProfile
-        fields = ['level', 'score']
+        fields = ['user', 'level', 'total_correct', 'total_completed', 'recent_results']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,6 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {'write_only': True}}
 
     def create(self, validated_data):
+        print(validated_data)
         profile_data = validated_data.pop('profile')
         password = validated_data.pop('password')
         # Create user
@@ -29,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         # Create profile
-        IntervalsProfile.objects.create(user=user, level=0, score=0)  # placeholder level and score, **profile_data should be used later
+        IntervalsProfile.objects.create(user=user, level=0, total_correct=0, total_completed=0, recent_results=[])
 
         return user
 
@@ -66,12 +67,10 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     # Customize the JWT response (the response, not the token) to include user information
     def validate(self, attrs):
         data = super().validate(attrs)
-        data['username'] = self.user.username
+        data['user'] = UserSerializer(self.user).data
 
         return data
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-
-

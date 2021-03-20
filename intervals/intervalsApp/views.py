@@ -60,7 +60,7 @@ def answer_check(request):
         data = request.data["question"]
         guess = request.data["guess"]
 
-        # Deserialization
+        # Deserialization and game logic handling
         serializer = QuestionSerializer(data=data)
         if serializer.is_valid():
             question = serializer.save()
