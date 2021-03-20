@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
+from django.apps import apps
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
-
-# User section
 
 
 class User(AbstractUser):
@@ -15,28 +17,13 @@ class IntervalsProfile(models.Model):
     # If User is deleted, then the corresponding IntervalsProfile will be deleted as well.
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     level = models.IntegerField(default=0)
-    score = models.DecimalField(default=0, max_digits=5, decimal_places=2)
+    total_correct = models.IntegerField(default=0)  # Total correct answers within that level
+    total_completed = models.IntegerField(default=0)  # Total answers within that level
+    recent_results = ArrayField(models.BooleanField(), size=apps.get_app_config('intervalsApp').SCORE_RANGE, default=list)  # Uses postgres ArrayField
 
 
-# Quiz section
+@receiver(post_save, sender=User)
+def user_created(sender, instance, created, **kwargs):
+    if created:
+        IntervalsProfile.objects.create(user=instance)
 
-
-# class Question(models.Model):
-#     question = models.CharField(...)
-#
-#     def check_answer(self, choice):
-#         return self.choice_set.filter(id=choice.id, is_answer=True).exists()
-#
-#     def get_answers(self):
-#         return self.choice_set.filter(is_answer=True)
-
-#
-# class Choice(models.Model):
-#     question = models.ForeignKey('Question')
-#     choice = models.CharField(...)
-#     is_answer = models.BooleanField(default=False)
-#
-#
-# class Answer(models.Model):
-#     question = models.ForeignKey("Question")
-#     answers = models.ForeignKey("Choice")
