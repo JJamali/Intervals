@@ -6,9 +6,12 @@ from .serializers import UserSerializer, UserSerializerWithToken
 from .question_generator import create_random_question, QuestionSerializer
 
 
+# User
+
 # current_user handles requests pertaining to the current user
 @api_view(['POST', 'GET'])
 def current_user(request):
+
     if request.method == 'POST':
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -27,6 +30,7 @@ class UserList(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
+
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -34,17 +38,14 @@ class UserList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Quiz
-@api_view(['POST', 'GET'])
-# Collect question information and post guess
+# Quiz section
+
+# Send question information
+@api_view(['GET'])
 def question(request):
-    if request.method == 'POST':
-        # Frontend sends backend guess
-        pass
 
     if request.method == 'GET':
-        # Give question and potential answers
-
+        # Calls function from question_generator.py to create question
         question_data = create_random_question()
         return Response(question_data, status=status.HTTP_201_CREATED)
 
@@ -55,15 +56,19 @@ def answer_check(request):
 
     if request.method == 'POST':
         # Backend sends frontend correct guess
-        print(request.data)
+        print(request.user)
         data = request.data["question"]
         guess = request.data["guess"]
+
+        # Deserialization
         serializer = QuestionSerializer(data=data)
         if serializer.is_valid():
             question = serializer.save()
 
             if question.correct_answer == guess:
+                # TODO: Call on game logic to update model
                 return Response({"correct": True, "correct_answer": question.correct_answer}, status=status.HTTP_200_OK)
 
             else:
+                # TODO: Call on game logic to update model
                 return Response({"correct": False, "correct_answer": question.correct_answer}, status=status.HTTP_200_OK)

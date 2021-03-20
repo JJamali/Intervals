@@ -10,7 +10,8 @@ class App extends Component {
     this.state = {
       displayed_form: '',
       logged_in: localStorage.getItem('token') ? true : false,
-      username: ''
+      username: '',
+      question:''
     };
   }
 
@@ -42,7 +43,7 @@ class App extends Component {
       .then(res => res.json())
       .then(json => {
         console.log(json);
-        localStorage.setItem('token', json.token); // Sets token
+        this.setState({jwt_token: json.access, jwt_token_refresh: json.refresh}); // Sets token
         this.setState({
           username: json.username,
           logged_in: true,
@@ -62,7 +63,7 @@ class App extends Component {
     })
       .then(res => res.json())
       .then(json => {
-        localStorage.setItem('token', json.token);
+        this.setState({jwt_token: json.token}); // Sets token
         this.setState({
           logged_in: true,
           displayed_form: '',
@@ -72,7 +73,6 @@ class App extends Component {
   };
 
   handle_logout = () => {
-    localStorage.removeItem('token');
     this.setState({ logged_in: false, username: '' });
   };
 
@@ -81,6 +81,46 @@ class App extends Component {
       displayed_form: form
     });
   };
+
+  get_question = (e, data) => {
+    e.preventDefault();
+
+    fetch('http://localhost:8000/api/intervals/question/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+.then(res => res.json())
+      .then(json => {
+        this.setState({
+          displayed_form: '',
+          question: json,
+        });
+      });
+  };
+
+  answer_check = (e, data) => {
+    e.preventDefault();
+    console.log(this.state.jwt_token);
+    fetch('http://localhost:8000/api/intervals/answer_check/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.state.jwt_token}`
+      },
+      // body collects data (in the form of a dictionary) to be sent to backend
+      body: JSON.stringify({question: this.state.question, guess: this.state.guess})
+    })
+    .then(response => response.json())
+    .then(data => this.setState({ }));
+  };
+
+  handle_guess_change = (e) => {
+    this.setState({guess: e.target.value})
+  }
+
 
   render() {
     let form;
@@ -108,6 +148,19 @@ class App extends Component {
             ? `Hello, ${this.state.username}`
             : 'Please Log In'}
         </h3>
+
+        <form onSubmit={this.get_question}>
+          <input type="submit" value="Get question" />
+        </form>
+
+
+        <form onSubmit={this.answer_check}>
+          Question: {this.state.question.question}
+          <input type="text" value={this.state.guess} name="guess" onChange={this.handle_guess_change} />
+        <input type="submit" value="Submit" />
+      </form>
+
+
       </div>
     );
   }
