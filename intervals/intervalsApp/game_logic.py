@@ -24,4 +24,3 @@ def handle_answer(user: User, correct):
         current_user.recent_results.append(False)
 
     current_user.save()
-

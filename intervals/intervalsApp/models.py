@@ -26,4 +26,3 @@ class IntervalsProfile(models.Model):
 def user_created(sender, instance, created, **kwargs):
     if created:
         IntervalsProfile.objects.create(user=instance)
-
