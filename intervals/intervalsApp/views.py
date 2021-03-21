@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, UserSerializerWithToken
 from .question_generator import create_random_question, QuestionSerializer
+from . import game_logic
 
 
 # User
@@ -65,10 +66,9 @@ def answer_check(request):
         if serializer.is_valid():
             question = serializer.save()
 
-            if question.correct_answer == guess:
-                # TODO: Call on game logic to update model
-                return Response({"correct": True, "correct_answer": question.correct_answer}, status=status.HTTP_200_OK)
+            correct = question.correct_answer == guess
+            game_logic.handle_answer(request.user, correct)
+            return Response({"correct": correct, "correct_answer": question.correct_answer}, status=status.HTTP_200_OK)
 
-            else:
-                # TODO: Call on game logic to update model
-                return Response({"correct": False, "correct_answer": question.correct_answer}, status=status.HTTP_200_OK)
+        else:
+            return Response(request.data, status=status.HTTP_400_BAD_REQUEST);
