@@ -85,45 +85,4 @@ class App extends Component {
     }
 }
 
-/*
-let form;
-switch (this.state.displayed_form) {
-case 'login':
-form = <LoginForm handle_login={this.handle_login} />;
-break;
-case 'signup':
-form = <SignupForm handle_signup={this.handle_signup} />;
-break;
-default:
-form = null;
-}
-<div className="App">
-<Nav
-logged_in={this.state.logged_in}
-display_form={this.display_form}
-handle_logout={this.handle_logout}
-/>
-{form}
-<h3>
-{this.state.logged_in
-? `Hello, ${this.state.username}`
-: 'Please Log In'}
-</h3>
-
-<form onSubmit={this.get_question}>
-<input type="submit" value="Get question" />
-</form>
-<div>
-Total correct: {this.state.user.profile.total_correct}
-
-Total answered: {this.state.user.profile.total_completed}
-</div>
-
-<form onSubmit={this.answer_check}>
-Question: {this.state.question.question}
-<input type="text" name="guess" onChange={this.handle_guess_change} />
-<input type="submit" value="Submit" />
-</form>
-</div>
-*/
 export default App;
