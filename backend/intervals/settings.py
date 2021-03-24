@@ -37,7 +37,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'corsheaders',
-    'intervalsApp.apps.IntervalsappConfig',
+    'intervalsApp.apps.IntervalsAppConfig',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
