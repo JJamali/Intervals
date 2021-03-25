@@ -1,3 +1,4 @@
 venv/
-/intervals/intervals/.env
+**/.env
 node_modules/
+/.idea/
