@@ -4,7 +4,10 @@ export function login(username, password) {
     const data = {username: username, password: password};
     return post("http://localhost:8000/api/token/", data)
         .then(res => res.data)
-        .catch(error => console.error("Unable to login:", error));
+        .catch(error => {
+            console.log("Unable to login:", error);
+            return null;
+        });
 }
 
 export function getUser(access) {

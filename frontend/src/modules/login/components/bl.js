@@ -7,10 +7,17 @@ export default function LoginFormBl() {
     const { loggedIn, updateToken } = React.useContext(UserContext);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [loginFailed, setLoginFailed] = useState(false);
 
     const handleSubmit = e => {
         login(username, password).then(response => {
-            updateToken({refresh: response.refresh, access: response.access});
+            if (response === null) {
+                // invalid login or another error
+                setLoginFailed(true);
+            }
+            else {
+                updateToken({refresh: response.refresh, access: response.access});
+            }
         });
         e.preventDefault();
     }
@@ -27,5 +34,5 @@ export default function LoginFormBl() {
         }
     };
 
-    return { username, password, loggedIn, handleChange, handleSubmit };
+    return { username, password, loggedIn, handleChange, handleSubmit, loginFailed };
 }

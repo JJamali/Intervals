@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import LoginFormBl from "./bl.js";
 
 export default function LoginForm() {
-    const { username, password, loggedIn, handleChange, handleSubmit } = LoginFormBl();
+    const { username, password, loggedIn, handleChange, handleSubmit, loginFailed } = LoginFormBl();
 
     return (
         <>
@@ -19,6 +19,7 @@ export default function LoginForm() {
                     <input type="password" name="password" value={password} onChange={handleChange} />
                 </label>
                 <input type="submit" value="Submit" />
+                {loginFailed && <p>Invalid login</p>}
             </form>}
         </>
     );

@@ -7,11 +7,17 @@ export default function SignupFormBl() {
     const { loggedIn, updateToken } = React.useContext(UserContext);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [signupFailed, setSignupFailed] = useState(false);
 
     const handleSubmit = e => {
         signup(username, password).then(response => {
-            console.log(response);
-            updateToken({refresh: response.refresh, access: response.access});
+            if (response === null) {
+                // user already exists or some other error
+                setSignupFailed(true);
+            }
+            else {
+                updateToken({refresh: response.refresh, access: response.access});
+            }
         });
         e.preventDefault();
     }
@@ -28,5 +34,5 @@ export default function SignupFormBl() {
         }
     };
 
-    return { username, password, loggedIn, handleChange, handleSubmit };
+    return { username, password, loggedIn, handleChange, handleSubmit, signupFailed };
 }
