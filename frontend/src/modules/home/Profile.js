@@ -1,6 +1,4 @@
 export default function Profile({user}) {
-    console.log(user.profile);
-
     return (
         <div>
             <h2>Home</h2>
