@@ -60,6 +60,7 @@ def answer_check(request):
     if request.method == 'POST':
         # Backend sends frontend correct guess
         print(request.user)
+        print(request.data)
         data = request.data["question"]
         guess = request.data["guess"]
 
@@ -71,3 +72,6 @@ def answer_check(request):
             correct = question.correct_answer == guess
             handle_answer(request.user, correct)
             return Response({"correct": correct, "correct_answer": question.correct_answer}, status=status.HTTP_200_OK)
+        else:
+            print('invalid question format')
+            return Response(status=status.HTTP_400_BAD_REQUEST)
