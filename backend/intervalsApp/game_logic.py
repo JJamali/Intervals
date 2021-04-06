@@ -1,4 +1,3 @@
-from django.apps import apps
 from .models import User
 from django.apps import apps
 

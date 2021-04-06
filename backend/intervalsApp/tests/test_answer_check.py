@@ -19,7 +19,9 @@ class AnswerCheckTests(TestCase):
 
         data = {'question': {'question': 'question prompt',
                              'answers': ['1', '2'],
-                             'correct_answer': '1'},
+                             'correct_answer': '1',
+                             'first_note': '1',
+                             'second_note': '2'},
                 'guess': '1'}
         response = client.post(reverse('answer_check'), data, format='json')
         self.assertEqual(200, response.status_code)
@@ -35,7 +37,10 @@ class AnswerCheckTests(TestCase):
 
         data = {'question': {'question': 'question prompt',
                              'answers': ['1', '2'],
-                             'correct_answer': '1'},
+                             'correct_answer': '1',
+                             'first_note': '1',
+                             'second_note': '2'},
+
                 'guess': '2'}
         response = client.post(reverse('answer_check'), data, format='json')
         self.assertEqual(200, response.status_code)

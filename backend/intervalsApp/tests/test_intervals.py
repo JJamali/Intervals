@@ -45,7 +45,12 @@ class QuestionTests(TestCase):
         return response.data['access']
 
     def test_get_question(self):
-        response = self.client.get(reverse('question'))
+        token = self.get_access_token('testuser', '123')
+
+        client = APIClient()
+        # Adds Authorization: header
+        client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+        response = client.get(reverse('question'))
         self.assertEqual(201, response.status_code)
 
         question = response.data

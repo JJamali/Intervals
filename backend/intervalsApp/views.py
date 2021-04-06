@@ -47,7 +47,9 @@ def question(request):
 
     if request.method == 'GET':
         # Calls function from question_generator.py to create question
-        question_data = create_random_question()
+        current_user = request.user
+
+        question_data = create_random_question(current_user)
         return Response(question_data, status=status.HTTP_201_CREATED)
 
 

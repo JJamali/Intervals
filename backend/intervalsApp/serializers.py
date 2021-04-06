@@ -4,7 +4,6 @@ from .models import IntervalsProfile
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .question_generator import Question
 
 
 class ProfileSerializer(serializers.ModelSerializer):
