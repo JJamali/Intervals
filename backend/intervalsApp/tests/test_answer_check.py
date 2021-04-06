@@ -17,16 +17,16 @@ class AnswerCheckTests(TestCase):
         # Adds Authorization: header
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
 
-        data = {'question': {'question': 'question prompt',
-                             'answers': ['1', '2'],
-                             'correct_answer': '1',
-                             'first_note': '1',
-                             'second_note': '2'},
-                'guess': '1'}
+        data = {'question': {'question': 'This is a question',
+                             'answers': ['major', 'perfect', 'perfect'],
+                             'correct_answer': 'major',
+                             'first_note': 155,
+                             'second_note': 195},
+                'guess': 'major'}
         response = client.post(reverse('answer_check'), data, format='json')
         self.assertEqual(200, response.status_code)
         self.assertEqual(True, response.data['correct'])
-        self.assertEqual('1', response.data['correct_answer'])
+        self.assertEqual('major', response.data['correct_answer'])
 
     def test_check_incorrect_answer(self):
         token = self.get_access_token('testuser', '123')
@@ -50,3 +50,18 @@ class AnswerCheckTests(TestCase):
     def get_access_token(self, username, password):
         response = self.client.post(reverse('token_obtain_pair'), {'username': username, 'password': password})
         return response.data['access']
+
+    def test_invalid_data(self):
+        token = self.get_access_token('testuser', '123')
+
+        client = APIClient()
+        # Adds Authorization: header
+        client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+        data = {'question': {'question': 'question prompt',
+                             'answers': 'not a list',
+                             'correct_answer': '1',
+                             'first_note': '1',
+                             'second_note': '2'},
+                'guess': '2'}
+        response = client.post(reverse('answer_check'), data, format='json')
+        self.assertEqual(400, response.status_code)
