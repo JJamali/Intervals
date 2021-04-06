@@ -23,7 +23,10 @@ export default function QuizBl() {
     };
 
     const updateQuestion = () => {
-        getQuestion().then(setQuestion);
+        getQuestion(token.access).then(question => {
+            console.log('got question', question);
+            setQuestion(question);
+        });
     };
     useEffect(() => {
         updateQuestion();
