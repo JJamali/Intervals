@@ -81,8 +81,8 @@ class QuestionSerializer(serializers.Serializer):
     question = serializers.CharField(max_length=20)
     answers = serializers.ListField(child=serializers.CharField(max_length=20))
     correct_answer = serializers.CharField(max_length=20)
-    first_note = serializers.IntegerField(max_value=10, min_value=None)
-    second_note = serializers.IntegerField(max_value=10, min_value=None)
+    first_note = serializers.IntegerField(min_value=0)
+    second_note = serializers.IntegerField(min_value=0)
 
     def create(self, validated_data):
         return Question(**validated_data)
