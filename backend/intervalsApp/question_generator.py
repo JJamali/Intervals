@@ -2,27 +2,20 @@ from rest_framework import serializers
 import random
 from .models import User, Question
 
-notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G']
-
 
 # Assumes that when note = 0, A is the note in question. Similarly, G refers to index 11
 # This calculates Hz values starting at A2 = 110Hz
 def note_to_frequency(note):
     # Frequency of A4 is 440Hz
     a = 440
-    return (a / 4) * (2 ** ((note) / 12))
+    return (a / 4) * (2 ** (note / 12))
 
 
 def generate_interval(semitones):
+    base_note_index = random.randrange(0, 36)
 
-    base_note_index = notes.index(random.choice(notes))
-    second_note_index = base_note_index + semitones
-
-    # Randomly chooses octave multiplier value to vary Hz
-    octave = random.choice([1, 2, 3])
-
-    base_note = note_to_frequency(octave * base_note_index)
-    second_note = note_to_frequency(octave * second_note_index)
+    base_note = note_to_frequency(base_note_index)
+    second_note = note_to_frequency(base_note_index + semitones)
 
     return base_note, second_note
 
@@ -51,6 +44,8 @@ def convert_answer_to_string(answer):
         number_component = "2nd"
     elif number_component == 3:
         number_component = "3rd"
+    elif number_component == 8:
+        return "8ve"
     else:
         number_component = str(number_component) + "th"
 
@@ -96,7 +91,6 @@ def create_random_question(user: User):
 class QuestionSerializer(serializers.Serializer):
     question_text = serializers.CharField(max_length=20)
     answers = serializers.ListField(child=serializers.CharField(max_length=20))
-    # correct_answer = serializers.CharField(max_length=20)
     first_note = serializers.IntegerField(min_value=0)
     second_note = serializers.IntegerField(min_value=0)
 
