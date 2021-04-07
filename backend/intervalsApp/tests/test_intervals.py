@@ -54,7 +54,8 @@ class QuestionTests(TestCase):
         self.assertEqual(201, response.status_code)
 
         question = response.data
-        self.assertIn('question', question)
+        self.assertIn('question_text', question)
+        self.assertIn('first_note', question)
+        self.assertIn('second_note', question)
         self.assertIn('answers', question)
-        self.assertIn('correct_answer', question)
-
+        self.assertNotIn('correct_answer', question)

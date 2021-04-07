@@ -17,16 +17,17 @@ class AnswerCheckTests(TestCase):
         # Adds Authorization: header
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
 
-        data = {'question': {'question': 'This is a question',
-                             'answers': ['major', 'perfect', 'perfect'],
-                             'correct_answer': 'major',
-                             'first_note': 155,
-                             'second_note': 195},
-                'guess': 'major'}
-        response = client.post(reverse('answer_check'), data, format='json')
+        client.get(reverse('question'))
+
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+
+        correct_answer = user.profile.question.correct_answer
+
+        response = client.post(reverse('answer_check'), {'guess': correct_answer}, format='json')
         self.assertEqual(200, response.status_code)
         self.assertEqual(True, response.data['correct'])
-        self.assertEqual('major', response.data['correct_answer'])
+        self.assertEqual(correct_answer, response.data['correct_answer'])
 
     def test_check_incorrect_answer(self):
         token = self.get_access_token('testuser', '123')
@@ -35,17 +36,18 @@ class AnswerCheckTests(TestCase):
         # Adds Authorization: header
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
 
-        data = {'question': {'question': 'question prompt',
-                             'answers': ['1', '2'],
-                             'correct_answer': '1',
-                             'first_note': '1',
-                             'second_note': '2'},
+        client.get(reverse('question'))
 
-                'guess': '2'}
-        response = client.post(reverse('answer_check'), data, format='json')
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+
+        correct_answer = user.profile.question.correct_answer
+        incorrect_answer = correct_answer + "to make this wrong, I am added"
+
+        response = client.post(reverse('answer_check'), {'guess': incorrect_answer}, format='json')
         self.assertEqual(200, response.status_code)
         self.assertEqual(False, response.data['correct'])
-        self.assertEqual('1', response.data['correct_answer'])
+        self.assertEqual(correct_answer, response.data['correct_answer'])
 
     def get_access_token(self, username, password):
         response = self.client.post(reverse('token_obtain_pair'), {'username': username, 'password': password})
