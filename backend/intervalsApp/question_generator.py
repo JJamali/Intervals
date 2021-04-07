@@ -1,7 +1,6 @@
-# from .serializers import QuestionSerializer
 from rest_framework import serializers
 import random
-from .models import User
+from .models import User, Question
 
 notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G']
 
@@ -34,14 +33,34 @@ def generate_answers(level):
     # Cases by level
     # Lists are in the form [interval number, quality, semitones]
     if level == 0:
-        interval_options = [[3, "major", 4], [5, "perfect", 7], [8, "perfect", 12]]
+        interval_options = [[3, "Major", 4], [5, "Perfect", 7], [8, "Perfect", 12]]
 
     if level == 1:
-        interval_options = [[3, "major", 4], [4, "perfect", 5], [5, "perfect", 7], [8, "perfect", 12]]
+        interval_options = [[3, "Major", 4], [4, "Perfect", 5], [5, "Perfect", 7], [8, "Perfect", 12]]
 
     return interval_options, random.choice(interval_options)
 
 
+def convert_answer_to_string(answer):
+
+    number_component = answer[0]
+
+    if number_component == 1:
+        number_component = "1st"
+    elif number_component == 2:
+        number_component = "2nd"
+    elif number_component == 3:
+        number_component = "3rd"
+    else:
+        number_component = str(number_component) + "th"
+
+    output = answer[1] + " " + number_component
+    return output
+
+
+# Generates all data for a question
+# Saves correct_answer to Question model, to be referenced in answer_check later on
+# Serializes everything except correct_answer and sends to frontend
 def create_random_question(user: User):
 
     question = "This is a question"
@@ -50,37 +69,34 @@ def create_random_question(user: User):
     current_user = user.profile
     answers_data, correct_answer_data = generate_answers(current_user.level)
 
-    # Takes strings from interval_options list and puts them in one list, named answers
+    # Converts list of answers into a list of strings, to be sent to frontend
     answers = []
     for x in answers_data:
-        answers.append(x[1])
-
-    # Collect string of correct_answer
-    correct_answer = correct_answer_data[1]
+        answers.append(convert_answer_to_string(x))
 
     # Generates Hz values of first and second notes to be played in frontend
+    # Must be done before converting correct_answer to string
     first_note, second_note = generate_interval(correct_answer_data[2])
 
+    # Collect string of correct_answer
+    # Must be done after generating interval
+    correct_answer = convert_answer_to_string(correct_answer_data)
+
     # Packages and serializes entire question to be sent
-    random_question = Question(question, answers, correct_answer, first_note, second_note)
+    random_question = Question(question_text=question, answers=answers, correct_answer=correct_answer, first_note=first_note, second_note=second_note, profile=current_user)
+
+    # Excludes correct_answer in serialization
     serializer = QuestionSerializer(random_question)
 
+    # Save to database
+    random_question.save()
     return serializer.data
 
 
-class Question:
-    def __init__(self, question, answers, correct_answer, first_note, second_note):
-        self.question = question
-        self.answers = answers
-        self.correct_answer = correct_answer
-        self.first_note = first_note
-        self.second_note = second_note
-
-
 class QuestionSerializer(serializers.Serializer):
-    question = serializers.CharField(max_length=20)
+    question_text = serializers.CharField(max_length=20)
     answers = serializers.ListField(child=serializers.CharField(max_length=20))
-    correct_answer = serializers.CharField(max_length=20)
+    # correct_answer = serializers.CharField(max_length=20)
     first_note = serializers.IntegerField(min_value=0)
     second_note = serializers.IntegerField(min_value=0)
 

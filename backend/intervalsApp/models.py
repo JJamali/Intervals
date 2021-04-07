@@ -23,6 +23,17 @@ class IntervalsProfile(models.Model):
     recent_results = ArrayField(models.BooleanField(), size=apps.get_app_config('intervalsApp').SCORE_RANGE, default=list)  # Uses postgres ArrayField
 
 
+class Question(models.Model):
+    # Has a 1-to-1 relationship with IntervalsProfile
+    # Represents current question being worked on
+    profile = models.OneToOneField(IntervalsProfile, related_name='question', on_delete=models.CASCADE)
+    question_text = models.CharField(max_length=1000)  # Actual question text e.g. "This is a question"
+    answers = ArrayField(models.CharField(max_length=1000))  # Array of answers
+    correct_answer = models.CharField(max_length=1000)
+    first_note = models.IntegerField(default=0)
+    second_note = models.IntegerField(default=0)
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def user_created(sender, instance, created, **kwargs):
     if created:

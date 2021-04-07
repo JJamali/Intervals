@@ -3,8 +3,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, UserSerializerWithToken
-from .question_generator import create_random_question, QuestionSerializer
+from .question_generator import create_random_question
 from .game_logic import handle_answer
+from .models import Question
 
 
 # User
@@ -58,20 +59,18 @@ def question(request):
 def answer_check(request):
 
     if request.method == 'POST':
-        # Backend sends frontend correct guess
-        print(request.user)
-        print(request.data)
-        data = request.data["question"]
+
+        # Receives user's guess from frontend
         guess = request.data["guess"]
 
-        # Deserialization and game logic handling
-        serializer = QuestionSerializer(data=data)
-        if serializer.is_valid():
-            question = serializer.save()
-
-            correct = question.correct_answer == guess
-            handle_answer(request.user, correct)
-            return Response({"correct": correct, "correct_answer": question.correct_answer}, status=status.HTTP_200_OK)
-        else:
-            print('invalid question format')
+        # Fetches question from database
+        try:
+            current_question = request.user.profile.question
+        except Question.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        correct = current_question.correct_answer == guess
+
+        handle_answer(request.user, correct)
+        return Response({"correct": correct, "correct_answer": current_question.correct_answer}, status=status.HTTP_200_OK)
+
