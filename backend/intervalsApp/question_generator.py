@@ -1,6 +1,7 @@
 from rest_framework import serializers
 import random
 from .models import User, Question
+from .level_design import generate_answers
 
 
 # Assumes that when note = 0, A is the note in question. Similarly, G refers to index 11
@@ -20,26 +21,12 @@ def generate_interval(semitones):
     return base_note, second_note
 
 
-# Manually define the difficulty of each level as difficulties cannot be generated, at least not reasonably
-# This function defines the difficulty of each level and generate_interval actually generates the answer
-def generate_answers(level):
-    # Cases by level
-    # Lists are in the form [interval number, quality, semitones]
-    if level == 0:
-        interval_options = [[3, "Major", 4], [5, "Perfect", 7], [8, "Perfect", 12]]
-
-    if level == 1:
-        interval_options = [[3, "Major", 4], [4, "Perfect", 5], [5, "Perfect", 7], [8, "Perfect", 12]]
-
-    return interval_options, random.choice(interval_options)
-
-
 def convert_answer_to_string(answer):
 
     number_component = answer[0]
 
     if number_component == 1:
-        number_component = "1st"
+        return "Unison"
     elif number_component == 2:
         number_component = "2nd"
     elif number_component == 3:
@@ -48,7 +35,6 @@ def convert_answer_to_string(answer):
         return "8ve"
     else:
         number_component = str(number_component) + "th"
-
     output = answer[1] + " " + number_component
     return output
 
