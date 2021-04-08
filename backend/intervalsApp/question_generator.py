@@ -26,13 +26,13 @@ def convert_answer_to_string(answer):
     number_component = answer[0]
 
     if number_component == 1:
-        return "Unison"
+        return "perfect Unison"
     elif number_component == 2:
         number_component = "2nd"
     elif number_component == 3:
         number_component = "3rd"
     elif number_component == 8:
-        return "8ve"
+        return "Perfect 8ve"
     else:
         number_component = str(number_component) + "th"
     output = answer[1] + " " + number_component
