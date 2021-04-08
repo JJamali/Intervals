@@ -1,10 +1,32 @@
 import React from "react";
-import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Button, Grid, LinearProgress } from "@material-ui/core"
+import { makeStyles } from "@material-ui/core/styles";
+import { Box, Paper, Button, Grid, LinearProgress } from "@material-ui/core"
 import QuizBl from "./bl.js";
+import Answers from "./components/Answers.js";
+import PlayButton from "./components/PlayButton.js";
+import "./Quiz.css";
+
+
+const useStyles = makeStyles({
+    quiz: {
+        width: "300px",
+    },
+    correct: {
+        width: "30px",
+        textAlign: "center",
+        backgroundColor: "green",
+    },
+    incorrect: {
+        width: "30px",
+        textAlign: "center",
+        backgroundColor: "red",
+    },
+})
 
 
 const RecentResults = ({recentResults}) => {
+    const classes = useStyles();
+
     const count = recentResults.reduce((acc, curr) => acc + (curr ? 1 : 0));
     const progress = 100 * count/20;
     console.log(count);
@@ -13,38 +35,46 @@ const RecentResults = ({recentResults}) => {
         <>
             <Grid container direction="row" spacing={2}>
                 {recentResults.map((result, index) => {
-                    const display = result ? "✓" : "x";
-                    const color = result ? "green" : "red";
-                    return (
-                        <Grid item key={index}>
-                            <Paper style={{color: color}}>{display}</Paper>
-                        </Grid>
-                    )
+                    if (result) {
+                        return (
+                            <Grid item key={index}>
+                                <Paper className={classes.correct}>✓</Paper>
+                            </Grid>
+                        )
+                    }
+                    else {
+                        return (
+                            <Grid item key={index}>
+                                <Paper className={classes.incorrect}>x</Paper>
+                            </Grid>
+                        )
+                    }
                 })}
             </Grid>
-            <LinearProgress variant="determinate" value={progress} style={{margin: "10px"}} />
         </>
     )
 }
 
 
 export default function Quiz() {
-    const { question, recentResults, handleSubmit } = QuizBl();
+    const classes = useStyles();
+    const { question, recentResults, handleSubmit, correctAnswer, answered, goNext } = QuizBl();
 
     return (
-        <Paper>
-            <div>
-                <b style={{paddingRight: "20px"}}>{question.question}</b>
-                <span>From {question.first_note} to {question.second_note}</span>
+        <Paper className={classes.quiz}>
+            <div className="quiz-header">
+                <div className="question-text">{question.question_text}</div>
+                <div className="interval">
+                    <Grid container direction="row" alignItems="center">
+                        <p>Play notes:</p>
+                        <PlayButton first={question.first_note} second={question.second_note} />
+                    </Grid>
+                </div>
             </div>
-            <div>
-                {question.answers && question.answers.map((answer, index) =>
-                    <Button value={answer} onClick={handleSubmit} key={index}>
-                        {answer}
-                    </Button>
-                )}
-            </div>
-            <RecentResults recentResults={recentResults} />
+            <Answers question={question} handleSubmit={handleSubmit} correctAnswer={correctAnswer} answered={answered} />
+            <Box className="right-box">
+                <Button disabled={!answered} onClick={goNext}>NEXT</Button>
+            </Box>
         </Paper>
     );
 }

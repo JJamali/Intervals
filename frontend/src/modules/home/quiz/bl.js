@@ -7,15 +7,20 @@ export default function QuizBl() {
     const { token, user, refreshUserData } = React.useContext(UserContext);
     const [question, setQuestion] = React.useState({});
     const [guess, setGuess] = React.useState("");
+    const [correctAnswer, setCorrectAnswer] = React.useState(undefined);
+    const [answered, setAnswered] = React.useState(false);
 
     // Submits answer and gets response
     const handleSubmit = e => {
         const guess = e.currentTarget.value;
         console.log(e);
         console.log("Submitting", guess);
-        answerCheck(question, guess, token.access)
+        answerCheck(guess, token.access)
             .then(res => {
+                console.log("submit response", res);
                 refreshUserData();
+                setCorrectAnswer(res.data.correct_answer);
+                setAnswered(true);
             });
         e.preventDefault();
     };
@@ -32,5 +37,11 @@ export default function QuizBl() {
 
     const recentResults = user.profile.recent_results;
 
-    return { question, recentResults, handleSubmit };
+    const goNext = e => {
+        console.log("next");
+        setAnswered(false);
+        updateQuestion();
+    }
+
+    return { question, recentResults, handleSubmit, correctAnswer, answered, goNext };
 }
