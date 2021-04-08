@@ -44,7 +44,7 @@ def convert_answer_to_string(answer):
 # Serializes everything except correct_answer and sends to frontend
 def create_random_question(user: User):
 
-    question = "This is a question"
+    question = "Identify the interval"
 
     # Generates all answers and random correct answer based on user's level
     current_user = user.profile
