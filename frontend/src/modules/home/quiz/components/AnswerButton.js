@@ -31,7 +31,7 @@ const AnswerButton = (props) => {
     const classes = useStyles(props);
 
     return (
-        <Button onClick={props.onClick} disabled={props.answered} classes={{ root: classes.button, disabled: classes.disabled }}>
+        <Button value={props.answer} onClick={props.onClick} disabled={props.answered} classes={{ root: classes.button, disabled: classes.disabled }}>
             {props.answer}
         </Button>
     )
