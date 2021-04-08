@@ -63,8 +63,17 @@ def create_random_question(user: User):
     # Must be done after generating interval
     correct_answer = convert_answer_to_string(correct_answer_data)
 
-    # Packages and serializes entire question to be sent
-    random_question = Question(question_text=question, answers=answers, correct_answer=correct_answer, first_note=first_note, second_note=second_note, profile=current_user)
+    # If a user already has a question, update it with new values
+    random_question, created = Question.objects.update_or_create(
+        profile=current_user,
+        defaults={
+            'question_text': question,
+            'answers': answers,
+            'correct_answer': correct_answer,
+            'first_note': first_note,
+            'second_note': second_note
+        }
+    )
 
     # Excludes correct_answer in serialization
     serializer = QuestionSerializer(random_question)

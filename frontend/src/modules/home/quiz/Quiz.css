@@ -1,0 +1,13 @@
+.quiz-header {
+    padding: 10px;
+}
+
+.question-text {
+    font-weight: bold;
+}
+
+.right-box {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
