@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework.test import APIClient
+from . import utils
 
 
 class AnswerCheckTests(TestCase):
@@ -11,14 +12,11 @@ class AnswerCheckTests(TestCase):
         User.objects.create_user(username='testuser', password='123')
 
     def test_check_correct_answer(self):
-        token = self.get_access_token('testuser', '123')
-
-        client = APIClient()
-        # Adds Authorization: header
-        client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+        client = utils.get_auth_client('testuser', '123')
 
         client.get(reverse('question'))
 
+        # Get user with username 'testuser'
         User = get_user_model()
         user = User.objects.get(username='testuser')
 
@@ -30,11 +28,7 @@ class AnswerCheckTests(TestCase):
         self.assertEqual(correct_answer, response.data['correct_answer'])
 
     def test_check_incorrect_answer(self):
-        token = self.get_access_token('testuser', '123')
-
-        client = APIClient()
-        # Adds Authorization: header
-        client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+        client = utils.get_auth_client('testuser', '123')
 
         client.get(reverse('question'))
 
@@ -49,16 +43,9 @@ class AnswerCheckTests(TestCase):
         self.assertEqual(False, response.data['correct'])
         self.assertEqual(correct_answer, response.data['correct_answer'])
 
-    def get_access_token(self, username, password):
-        response = self.client.post(reverse('token_obtain_pair'), {'username': username, 'password': password})
-        return response.data['access']
-
     def test_invalid_data(self):
-        token = self.get_access_token('testuser', '123')
+        client = utils.get_auth_client('testuser', '123')
 
-        client = APIClient()
-        # Adds Authorization: header
-        client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
         data = {'question': {'question': 'question prompt',
                              'answers': 'not a list',
                              'correct_answer': '1',
