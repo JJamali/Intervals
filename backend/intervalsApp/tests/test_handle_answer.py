@@ -67,3 +67,35 @@ class TestLevelUp(TestCase):
         level = user.profile.level
 
         self.assertEqual(level, 0)
+
+    # Test that user does not exceed max level
+    def test_max_level(self):
+        client = utils.get_auth_client('testuser', '123')
+
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+
+        user.profile.level = apps.get_app_config('intervalsApp').TOTAL_LEVELS
+
+        for x in range(apps.get_app_config('intervalsApp').SCORE_RANGE + 10):
+            self.send_correct_answer('testuser', client)
+
+        level = user.profile.level
+
+        self.assertEqual(level, apps.get_app_config('intervalsApp').TOTAL_LEVELS)
+
+    # Test to see if current_level.recent_results is saved properly
+    def test_current_level_recent_results(self):
+        client = utils.get_auth_client('testuser', '123')
+
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+
+        current_user = user.profile
+        recent_results = current_user.recent_results_at_level(current_user.current_level)
+        self.send_correct_answer('testuser', client)
+
+        current_user.current_level = 1
+
+        second_recent_results = current_user.recent_results_at_level(current_user.current_level)
+        self.assertNotEqual(recent_results, second_recent_results)
