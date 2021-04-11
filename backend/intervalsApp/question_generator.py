@@ -42,13 +42,19 @@ def convert_answer_to_string(answer):
 # Generates all data for a question
 # Saves correct_answer to Question model, to be referenced in answer_check later on
 # Serializes everything except correct_answer and sends to frontend
-def create_random_question(user: User):
+def create_random_question(user: User, given_level=None):
 
     question = "Identify the interval"
 
     # Generates all answers and random correct answer based on user's level
     current_user = user.profile
-    answers_data, correct_answer_data = generate_answers(current_user.level)
+
+    # If specific level parameter was passed
+    if given_level is not None:
+        answers_data, correct_answer_data = generate_answers(given_level)
+    # Else take user level
+    else:
+        answers_data, correct_answer_data = generate_answers(current_user.level)
 
     # Converts list of answers into a list of strings, to be sent to frontend
     answers = []

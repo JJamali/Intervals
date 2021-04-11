@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from .serializers import UserSerializer, UserSerializerWithToken
 from .question_generator import create_random_question
 from .game_logic import handle_answer
-from .models import Question
+from .models import Question, RecentResults
 
 
 # User
@@ -49,8 +49,17 @@ def question(request):
     if request.method == 'GET':
         # Calls function from question_generator.py to create question
         current_user = request.user
+        given_level = request.GET.get('level', default=current_user.profile.level)
 
-        question_data = create_random_question(current_user)
+        RecentResults.objects.get_or_create(profile=current_user.profile, level=given_level)
+        # Update current_level
+        current_user.current_level = given_level
+        current_user.save()
+
+        if given_level < 0 or given_level > current_user.profile.level:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        question_data = create_random_question(current_user, given_level)
         return Response(question_data, status=status.HTTP_201_CREATED)
 
 
@@ -71,6 +80,6 @@ def answer_check(request):
 
         correct = current_question.correct_answer == guess
 
+        current_user = request.user
         handle_answer(request.user, correct)
         return Response({"correct": correct, "correct_answer": current_question.correct_answer}, status=status.HTTP_200_OK)
-
