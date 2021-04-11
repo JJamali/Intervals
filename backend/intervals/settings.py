@@ -148,3 +148,9 @@ JWT_AUTH = {
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
 )
+
+# Override default SimpleJWT settings
+# https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html
+SIMPLE_JWT = {
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+}
