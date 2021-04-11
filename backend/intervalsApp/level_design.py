@@ -24,10 +24,32 @@ perfect_dict = {
     8: [8, "Perfect", 12]  # 8ve
 }
 
+augmented_dict = {
+    1: [1, "Augmented", 1],
+    2: [2, "Augmented", 3],
+    3: [3, "Augmented", 5],
+    4: [4, "Augmented", 6],
+    5: [5, "Augmented", 8],
+    6: [6, "Augmented", 10],
+    7: [7, "Augmented", 12],
+}
+
+diminished_dict = {
+    2: [2, "Diminished", 0],
+    3: [3, "Diminished", 2],
+    4: [4, "Diminished", 4],
+    5: [5, "Diminished", 6],
+    6: [6, "Diminished", 7],
+    7: [7, "Diminished", 9],
+    8: [8, "Diminished", 11]
+}
+
 intervals_dict = {
     "major": major_dict,
     "minor": minor_dict,
     "perfect": perfect_dict,
+    "augmented": augmented_dict,
+    "diminished": diminished_dict,
 }
 
 
