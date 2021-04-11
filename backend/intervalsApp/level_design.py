@@ -69,4 +69,33 @@ def generate_answers(level):
                             intervals_dict["perfect"][5],
                             intervals_dict["perfect"][8]]
 
+    if level == 2:
+        interval_options = [intervals_dict["major"][2],
+                            intervals_dict["major"][6],
+                            intervals_dict["major"][7]]
+
+    if level == 3:
+        interval_options = [intervals_dict["major"][2],
+                            intervals_dict["major"][3],
+                            intervals_dict["perfect"][4],
+                            intervals_dict["perfect"][5],
+                            intervals_dict["major"][6],
+                            intervals_dict["major"][7],
+                            intervals_dict["perfect"][8]]
+
+    if level == 4:
+        interval_options = [intervals_dict["minor"][2],
+                            intervals_dict["minor"][3],
+                            intervals_dict["minor"][6],
+                            intervals_dict["minor"][7]]
+
+    if level == 5:
+        interval_options = [intervals_dict["minor"][2],
+                            intervals_dict["minor"][3],
+                            intervals_dict["perfect"][4],
+                            intervals_dict["perfect"][5],
+                            intervals_dict["minor"][6],
+                            intervals_dict["minor"][7],
+                            intervals_dict["perfect"][8]]
+
     return interval_options, random.choice(interval_options)
