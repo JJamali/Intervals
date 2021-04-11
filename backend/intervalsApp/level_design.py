@@ -43,7 +43,7 @@ def generate_answers(level):
 
     if level == 1:
         interval_options = [intervals_dict["major"][3],
-                            intervals_dict["major"][4],
+                            intervals_dict["perfect"][4],
                             intervals_dict["perfect"][5],
                             intervals_dict["perfect"][8]]
 
