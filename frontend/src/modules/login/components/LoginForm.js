@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Redirect } from 'react-router-dom';
 import { TextField, Button } from "@material-ui/core";
 import LoginFormBl from "./bl.js";
 
 export default function LoginForm() {
-    const { username, password, loggedIn, handleChange, handleSubmit, loginFailed } = LoginFormBl();
+    const { loggedIn, handleChange, handleSubmit, loginFailed } = LoginFormBl();
 
     return (
         <>

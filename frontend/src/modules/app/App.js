@@ -1,16 +1,16 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component } from "react";
 import "./App.css";
 import {
     BrowserRouter as Router,
     Switch,
-    Route,
-    Redirect
+    Route
 } from "react-router-dom";
 import Grid from "@material-ui/core/grid";
 import Login from "modules/login/Login.js";
 import Signup from "modules/signup/Signup.js";
 import Home from "modules/home/Home.js";
-import UserProvider from "modules/app/context/userContext.js";
+import UserProvider from "modules/app/context/UserContext.js";
+import TokenProvider from "modules/app/context/TokenContext.js";
 
 class App extends Component {
     constructor(props) {
@@ -38,30 +38,28 @@ class App extends Component {
     }
 
     render() {
-        const value = {
-            token: this.state.token,
-            setToken: this.setToken
-        }
         return (
-            <UserProvider>
-                <Grid container justify="center">
-                    <Grid item>
-                        <Router>
-                            <Switch>
-                                <Route exact path="/">
-                                    <Home />
-                                </Route>
-                                <Route path="/login">
-                                    <Login />
-                                </Route>
-                                <Route path="/signup">
-                                    <Signup setToken={this.setToken} />
-                                </Route>
-                            </Switch>
-                        </Router>
-                    </Grid>
+            <Grid container justify="center">
+                <Grid item>
+                    <Router>
+                        <TokenProvider>
+                            <UserProvider>
+                                <Switch>
+                                    <Route exact path="/">
+                                        <Home />
+                                    </Route>
+                                    <Route path="/login">
+                                        <Login />
+                                    </Route>
+                                    <Route path="/signup">
+                                        <Signup setToken={this.setToken} />
+                                    </Route>
+                                </Switch>
+                            </UserProvider>
+                        </TokenProvider>
+                    </Router>
                 </Grid>
-            </UserProvider>
+            </Grid>
         );
     }
 }

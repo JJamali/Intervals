@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
-import { UserContext } from "modules/app/context/userContext.js";
+import { UserContext } from "modules/app/context/UserContext.js";
 import { getQuestion, answerCheck } from "./adapter";
 
 
 export default function QuizBl() {
     const { token, user, refreshUserData } = React.useContext(UserContext);
     const [question, setQuestion] = React.useState({});
-    const [guess, setGuess] = React.useState("");
     const [correctAnswer, setCorrectAnswer] = React.useState(undefined);
     const [answered, setAnswered] = React.useState(false);
 

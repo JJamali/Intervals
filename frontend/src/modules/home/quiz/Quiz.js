@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Box, Paper, Button, Grid, LinearProgress } from "@material-ui/core"
+import { Box, Paper, Button, Grid } from "@material-ui/core"
 import QuizBl from "./bl.js";
 import Answers from "./components/Answers.js";
 import PlayButton from "./components/PlayButton.js";

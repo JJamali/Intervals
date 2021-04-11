@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import { UserContext } from "modules/app/context/userContext.js";
+import React, { useState } from "react";
+import { UserContext } from "modules/app/context/UserContext.js";
 import { login } from "../adapter";
 
 
@@ -34,5 +34,5 @@ export default function LoginFormBl() {
         }
     };
 
-    return { username, password, loggedIn, handleChange, handleSubmit, loginFailed };
+    return { loggedIn, handleChange, handleSubmit, loginFailed };
 }

@@ -1,4 +1,4 @@
-import { get, post, getAuthenticated } from "modules/app/xhr";
+import { post, getAuthenticated } from "modules/app/xhr";
 
 export function login(username, password) {
     const data = {username: username, password: password};

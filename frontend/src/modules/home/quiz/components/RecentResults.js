@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Paper, Button, Grid, LinearProgress } from "@material-ui/core"
 
 
 const RecentResults = ({recentResults, height=16}) => {
