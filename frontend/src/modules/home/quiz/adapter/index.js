@@ -10,3 +10,9 @@ export const answerCheck = (guess, access) => {
     console.log('data', data);
     return postAuthenticated("/api/intervals/answer_check/", data, access);
 };
+
+export const logout = (e) => {
+    e.preventDefault();
+    console.log("Logged out");
+    return postAuthenticated("/api/intervals/logout/");
+};

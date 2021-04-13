@@ -5,9 +5,9 @@ from rest_framework.views import APIView
 from .serializers import UserSerializer, UserSerializerWithToken
 from .question_generator import create_random_question
 from .game_logic import handle_answer
-from .models import Question
 from django.contrib.auth import authenticate, login
 from .models import Question, RecentResults
+from django.contrib.auth import logout
 
 
 # User
@@ -106,3 +106,12 @@ def login_view(request):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+# Handles logging out.
+# Throws no errors if user was not logged in
+@api_view(['POST'])
+def logout_view(request):
+    logout(request)
+    return Response(status=status.HTTP_200_OK)
+    # Redirect to a success page.

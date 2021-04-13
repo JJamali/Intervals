@@ -5,6 +5,9 @@ import {
 import { Container } from "@material-ui/core";
 import Profile from './Profile.js';
 import Quiz from './quiz/Quiz.js';
+import {
+    logout
+} from "./quiz/adapter";
 import { UserContext } from "modules/app/context/UserContext.js";
 
 
@@ -22,6 +25,9 @@ export default function Home() {
                     </>
                 }
             </UserContext.Consumer>}
+            <button type="button" onClick={logout}>
+                Logout
+            </button>
         </Container>
     );
 }
