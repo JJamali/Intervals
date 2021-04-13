@@ -39,6 +39,7 @@ def handle_answer(user: User, correct):
                 # Else, increase level
                 else:
                     current_user.level += 1
+                    current_user.current_level = current_user.level
 
     recent_results.save()
     current_user.save()
