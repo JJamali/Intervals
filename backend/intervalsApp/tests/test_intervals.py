@@ -10,28 +10,24 @@ class CurrentUserTests(TestCase):
         User = get_user_model()
         User.objects.create_user(username='testuser', password='123')
 
+    def authenticate(self, username, password):
+        self.client.post(reverse('login'), {'username': username, 'password': password})
+
     def get_access_token(self, username, password):
         response = self.client.post(reverse('token_obtain_pair'), {'username': username, 'password': password})
         return response.data['access']
 
     def test_get_current_user(self):
-        token = self.get_access_token('testuser', '123')
+        self.authenticate('testuser', '123')
 
-        client = APIClient()
-        # Adds Authorization: header
-        client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-
-        response = client.get(reverse('current_user'))
+        response = self.client.get(reverse('current_user'))
         self.assertEqual(200, response.status_code)
         user = response.data
         self.assertEqual('testuser', user['username'])
 
-    def test_get_current_user_invalid_token(self):
-        client = APIClient()
-        # Adds Authorization: header
-        client.credentials(HTTP_AUTHORIZATION=f'Bearer invalid')
-
-        response = client.get(reverse('current_user'))
+    def test_get_current_user_invalid_credentials(self):
+        self.authenticate('testuser', 'invalid')
+        response = self.client.get(reverse('current_user'))
         self.assertEqual(401, response.status_code)
 
 
@@ -40,17 +36,16 @@ class QuestionTests(TestCase):
         User = get_user_model()
         User.objects.create_user(username='testuser', password='123')
 
+    def authenticate(self, username, password):
+        self.client.post(reverse('login'), {'username': username, 'password': password})
+
     def get_access_token(self, username, password):
         response = self.client.post(reverse('token_obtain_pair'), {'username': username, 'password': password})
         return response.data['access']
 
     def test_get_question(self):
-        token = self.get_access_token('testuser', '123')
-
-        client = APIClient()
-        # Adds Authorization: header
-        client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-        response = client.get(reverse('question'))
+        self.authenticate('testuser', '123')
+        response = self.client.get(reverse('question'))
         self.assertEqual(201, response.status_code)
 
         question = response.data

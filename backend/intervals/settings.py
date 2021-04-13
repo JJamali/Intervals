@@ -30,7 +30,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+STATIC_URL = '/api/static/'
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -88,6 +89,8 @@ DATABASES = {
         'NAME': os.environ['DB-NAME'],
         'USER': os.environ['DB-USER'],
         'PASSWORD': os.environ['DB-PASSWORD'],
+        'HOST': 'host.docker.internal',
+        'PORT': 5432,
     }
 }
 
@@ -137,16 +140,23 @@ AUTH_USER_MODEL = 'intervalsApp.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # For token authentication
+        'rest_framework.authentication.SessionAuthentication',
     )
 }
 
+
+# TODO: possibly remove
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'intervals.utils.my_jwt_response_handler'
 }
 
+# TODO: possibly remove
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
+    'http://localhost:8000',
+    'http://localhost:80',
+    'http://localhost',
 )
 
 # Override default SimpleJWT settings

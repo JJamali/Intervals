@@ -2,7 +2,6 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework.test import APIClient
-from . import utils
 
 
 class AnswerCheckTests(TestCase):
@@ -11,10 +10,18 @@ class AnswerCheckTests(TestCase):
         User = get_user_model()
         User.objects.create_user(username='testuser', password='123')
 
-    def test_check_correct_answer(self):
-        client = utils.get_auth_client('testuser', '123')
+    def authenticate(self):
+        self.client.post(reverse('login'), {'username': 'testuser', 'password': '123'})
 
-        client.get(reverse('question'))
+    def test_check_correct_answer(self):
+        self.authenticate()
+        # token = self.get_access_token('testuser', '123')
+        #
+        # client = APIClient()
+        # # Adds Authorization: header
+        # client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+        self.client.get(reverse('question'))
 
         # Get user with username 'testuser'
         User = get_user_model()
@@ -22,15 +29,15 @@ class AnswerCheckTests(TestCase):
 
         correct_answer = user.profile.question.correct_answer
 
-        response = client.post(reverse('answer_check'), {'guess': correct_answer}, format='json')
+        response = self.client.post(reverse('answer_check'), {'guess': correct_answer}, format='json')
         self.assertEqual(200, response.status_code)
         self.assertEqual(True, response.data['correct'])
         self.assertEqual(correct_answer, response.data['correct_answer'])
 
     def test_check_incorrect_answer(self):
-        client = utils.get_auth_client('testuser', '123')
+        self.authenticate()
 
-        client.get(reverse('question'))
+        self.client.get(reverse('question'))
 
         User = get_user_model()
         user = User.objects.get(username='testuser')
@@ -38,14 +45,13 @@ class AnswerCheckTests(TestCase):
         correct_answer = user.profile.question.correct_answer
         incorrect_answer = correct_answer + "to make this wrong, I am added"
 
-        response = client.post(reverse('answer_check'), {'guess': incorrect_answer}, format='json')
+        response = self.client.post(reverse('answer_check'), {'guess': incorrect_answer}, format='json')
         self.assertEqual(200, response.status_code)
         self.assertEqual(False, response.data['correct'])
         self.assertEqual(correct_answer, response.data['correct_answer'])
 
     def test_invalid_data(self):
-        client = utils.get_auth_client('testuser', '123')
-
+        self.authenticate()
         data = {'question': {'question': 'question prompt',
                              'answers': 'not a list',
                              'correct_answer': '1',

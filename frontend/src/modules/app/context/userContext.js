@@ -1,52 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { getUser } from "modules/login/adapter";
-import { TokenContext } from "modules/app/context/TokenContext.js";
 import { Redirect } from "react-router-dom";
 
 
 export const UserContext = React.createContext();
 
 const UserProvider = ({ children }) => {
-    const { token, setToken, deleteToken } = React.useContext(TokenContext);
+
     const [user, setUser] = useState(null);
     const [loggedIn, setLoggedIn] = useState(false);
 
-    const _getUser = (token) => {
-        getUser(token.access).then(user => {
+    const _getUser = () => {
+        getUser().then(response => {
+            const user = response.data;
+            console.log("Logged in", user);
             setUser(user);
         })
         .catch(error => {
             console.log("Failed to log in");
-            deleteToken();
+            setLoggedIn(false);
         });
     };
 
-    const updateToken = newToken => {
-        setToken(newToken);
-    };
-
     const refreshUserData = () => {
-        _getUser(token);
+        _getUser();
     };
 
     // the log in process sets the state in this order:
-    // token -> user -> loggedIn
+    // user -> loggedIn
     // the log out process sets the state in this order:
-    // token -> loggedIn -> user
-    useEffect(() => {
-        // log in
-        if (token !== null) {
-            _getUser(token);
-        }
-        // log out
-        else {
-            setLoggedIn(false);
-        }
-    }, [token]);
+    // loggedIn -> user
 
     // log in when user object is set
     useEffect(() => {
         if (user !== null) {
+            console.log(user.profile);
             setLoggedIn(true);
         }
     }, [user]);
@@ -58,11 +46,16 @@ const UserProvider = ({ children }) => {
         }
     }, [loggedIn]);
 
+    // try to log in on load
+    useEffect(() => {
+        _getUser();
+    }, []);
+
 
     return (
         <>
             {loggedIn && <Redirect to="/login" />}
-            <UserContext.Provider value={{ user, loggedIn, token, updateToken, refreshUserData }}>
+            <UserContext.Provider value={{ user, loggedIn, refreshUserData }}>
                 {children}
             </UserContext.Provider>
         </>

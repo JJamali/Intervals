@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from .serializers import UserSerializer, UserSerializerWithToken
 from .question_generator import create_random_question
 from .game_logic import handle_answer
+from .models import Question
+from django.contrib.auth import authenticate, login
 from .models import Question, RecentResults
 
 
@@ -15,27 +17,33 @@ from .models import Question, RecentResults
 def current_user(request):
 
     if request.method == 'POST':
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if request.user.is_authenticated:
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     if request.method == 'GET':
-        print(request.user)
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+        print('user', request.user)
+        if request.user.is_authenticated:
+            serializer = UserSerializer(request.user)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserList(APIView):
 
     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request, format=None):
-
+    def post(self, request):
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            login(request, user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -80,6 +88,21 @@ def answer_check(request):
 
         correct = current_question.correct_answer == guess
 
-        current_user = request.user
         handle_answer(request.user, correct)
         return Response({"correct": correct, "correct_answer": current_question.correct_answer}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def login_view(request):
+    if request.method == 'POST':
+        try:
+            username = request.data['username']
+            password = request.data['password']
+        except KeyError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)

@@ -4,7 +4,7 @@ import { getQuestion, answerCheck } from "./adapter";
 
 
 export default function QuizBl() {
-    const { token, user, refreshUserData } = React.useContext(UserContext);
+    const { user, refreshUserData } = React.useContext(UserContext);
     const [question, setQuestion] = React.useState({});
     const [correctAnswer, setCorrectAnswer] = React.useState(undefined);
     const [answered, setAnswered] = React.useState(false);
@@ -14,7 +14,7 @@ export default function QuizBl() {
         const guess = e.currentTarget.value;
         console.log(e);
         console.log("Submitting", guess);
-        answerCheck(guess, token.access)
+        answerCheck(guess)
             .then(res => {
                 console.log("submit response", res);
                 refreshUserData();
@@ -25,7 +25,7 @@ export default function QuizBl() {
     };
 
     const updateQuestion = () => {
-        getQuestion(token.access).then(question => {
+        getQuestion().then(question => {
             console.log('got question', question);
             setQuestion(question);
         });
