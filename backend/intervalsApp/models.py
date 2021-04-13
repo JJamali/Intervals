@@ -46,7 +46,7 @@ class RecentResults(models.Model):
     # If IntervalsProfile is deleted, then all corresponding RecentResults will be deleted as well
     profile = models.ForeignKey(IntervalsProfile, on_delete=models.CASCADE, related_name='recent')
     recent_results = ArrayField(models.BooleanField(), size=apps.get_app_config('intervalsApp').SCORE_RANGE, default=list)  # Uses postgres ArrayField
-    level = models.IntegerField(default=0)
+    level = models.IntegerField()
     total_correct = models.IntegerField(default=0)  # Total correct answers within that level
     total_completed = models.IntegerField(default=0)  # Total answers within that level
 
@@ -55,3 +55,10 @@ class RecentResults(models.Model):
 def user_created(sender, instance, created, **kwargs):
     if created:
         IntervalsProfile.objects.create(user=instance)
+
+
+# Create RecentResults for the starting level
+@receiver(post_save, sender=IntervalsProfile)
+def profile_created(sender, instance, created, **kwargs):
+    if created:
+        RecentResults.objects.create(profile=instance, level=instance.level)

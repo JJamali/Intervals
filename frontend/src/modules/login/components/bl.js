@@ -1,23 +1,25 @@
-import React, {useState, useEffect} from "react";
-import { UserContext } from "modules/app/context/userContext.js";
+import React, { useState } from "react";
+import { UserContext } from "modules/app/context/UserContext.js";
 import { login } from "../adapter";
 
 
 export default function LoginFormBl() {
-    const { loggedIn, updateToken } = React.useContext(UserContext);
+    const { loggedIn, refreshUserData } = React.useContext(UserContext);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loginFailed, setLoginFailed] = useState(false);
 
     const handleSubmit = e => {
         login(username, password).then(response => {
-            if (response === null) {
-                // invalid login or another error
-                setLoginFailed(true);
-            }
-            else {
-                updateToken({refresh: response.refresh, access: response.access});
-            }
+            console.log('status', response.status)
+            // good to log in
+            console.log(response);
+            setLoginFailed(false);
+            refreshUserData();
+        }).catch(error => {
+            // not good to log in :(
+            console.log('error', error);
+            setLoginFailed(true);
         });
         e.preventDefault();
     }
@@ -34,5 +36,5 @@ export default function LoginFormBl() {
         }
     };
 
-    return { username, password, loggedIn, handleChange, handleSubmit, loginFailed };
+    return { loggedIn, handleChange, handleSubmit, loginFailed };
 }

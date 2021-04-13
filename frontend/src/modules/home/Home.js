@@ -1,18 +1,15 @@
-import React, { Component, useState, useEffect } from 'react';
+import React from 'react';
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
     Redirect
 } from "react-router-dom";
 import { Container } from "@material-ui/core";
 import Profile from './Profile.js';
 import Quiz from './quiz/Quiz.js';
-import { UserContext } from "modules/app/context/userContext.js";
+import { UserContext } from "modules/app/context/UserContext.js";
 
 
 export default function Home() {
-    const { loggedIn, refreshUserData } = React.useContext(UserContext);
+    const { loggedIn } = React.useContext(UserContext);
 
     return (
         <Container>

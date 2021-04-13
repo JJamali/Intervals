@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
-import { UserContext } from "modules/app/context/userContext.js";
+import { UserContext } from "modules/app/context/UserContext.js";
 import { getQuestion, answerCheck } from "./adapter";
 
 
 export default function QuizBl() {
-    const { token, user, refreshUserData } = React.useContext(UserContext);
+    const { user, refreshUserData } = React.useContext(UserContext);
     const [question, setQuestion] = React.useState({});
-    const [guess, setGuess] = React.useState("");
     const [correctAnswer, setCorrectAnswer] = React.useState(undefined);
     const [answered, setAnswered] = React.useState(false);
 
@@ -15,7 +14,7 @@ export default function QuizBl() {
         const guess = e.currentTarget.value;
         console.log(e);
         console.log("Submitting", guess);
-        answerCheck(guess, token.access)
+        answerCheck(guess)
             .then(res => {
                 console.log("submit response", res);
                 refreshUserData();
@@ -26,7 +25,7 @@ export default function QuizBl() {
     };
 
     const updateQuestion = () => {
-        getQuestion(token.access).then(question => {
+        getQuestion().then(question => {
             console.log('got question', question);
             setQuestion(question);
         });
@@ -35,7 +34,10 @@ export default function QuizBl() {
         updateQuestion();
     }, []);
 
-    const recentResults = user.profile.recent_results;
+    // const recentResults = user.profile.recent_results;
+    const recentResults = user.profile.recent.find(result => {
+        return result.level === user.profile.current_level;
+    });
 
     const goNext = e => {
         console.log("next");

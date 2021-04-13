@@ -5,10 +5,18 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
+class RecentResultsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecentResults
+        fields = ['level', 'total_correct', 'total_completed', 'recent_results']
+
+
 class ProfileSerializer(serializers.ModelSerializer):
+    recent = RecentResultsSerializer(many=True, read_only=True)
+
     class Meta:
         model = IntervalsProfile
-        fields = ['user', 'level', 'recent']
+        fields = ['user', 'level', 'current_level', 'recent']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -31,13 +39,6 @@ class UserSerializer(serializers.ModelSerializer):
         IntervalsProfile.objects.create(user=user, level=0)
 
         return user
-
-
-class RecentResultsSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = RecentResults
-        fields = ['total_correct', 'total_completed', 'recent_results']
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):

@@ -1,4 +1,4 @@
-import { Button, Grid } from "@material-ui/core"
+import { Button } from "@material-ui/core"
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import * as Tone from "tone";
 

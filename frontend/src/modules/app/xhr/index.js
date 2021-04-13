@@ -1,8 +1,12 @@
 import Axios from "axios";
 
 export function returnAxiosInstance() {
-    const config = {};
-    return Axios.create(config);
+    const instance = Axios.create();
+    instance.defaults.xsrfHeaderName = "X-CSRFToken";
+    instance.defaults.xsrfCookieName = "csrftoken";
+    instance.defaults.withCredentials = true;
+    instance.defaults.baseURL = "http://localhost";
+    return instance;
 }
 
 export function get(url) {
