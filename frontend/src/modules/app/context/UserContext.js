@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUser } from "modules/login/adapter";
+import { getUser, logout } from "./adapter";
 import { Redirect } from "react-router-dom";
 
 
@@ -25,6 +25,11 @@ const UserProvider = ({ children }) => {
     const refreshUserData = () => {
         _getUser();
     };
+
+    const logoutUser = () => {
+        logout();
+        setLoggedIn(false);
+    }
 
     // the log in process sets the state in this order:
     // user -> loggedIn
@@ -55,7 +60,7 @@ const UserProvider = ({ children }) => {
     return (
         <>
             {loggedIn && <Redirect to="/login" />}
-            <UserContext.Provider value={{ user, loggedIn, refreshUserData }}>
+            <UserContext.Provider value={{ user, loggedIn, refreshUserData, logout: logoutUser }}>
                 {children}
             </UserContext.Provider>
         </>
