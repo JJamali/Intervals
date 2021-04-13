@@ -43,6 +43,7 @@ class TestLevelUp(TestCase):
         level = user.profile.level
 
         self.assertEqual(level, 1)
+        self.assertEqual(user.profile.current_level, 1)
 
     def test_not_level_up(self):
         self.authenticate()
