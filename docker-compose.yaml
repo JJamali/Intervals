@@ -17,6 +17,8 @@ services:
   intervals-django:
     tty: true
     container_name: intervals-django
+    environment:
+      HOST_LOCATION: "host.docker.internal"
     build: ./backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:

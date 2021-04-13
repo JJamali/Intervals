@@ -89,7 +89,7 @@ DATABASES = {
         'NAME': os.environ['DB-NAME'],
         'USER': os.environ['DB-USER'],
         'PASSWORD': os.environ['DB-PASSWORD'],
-        'HOST': 'host.docker.internal',
+        'HOST': os.environ['HOST_LOCATION'],
         'PORT': 5432,
     }
 }
