@@ -34,7 +34,10 @@ export default function QuizBl() {
         updateQuestion();
     }, []);
 
-    const recentResults = user.profile.recent_results;
+    // const recentResults = user.profile.recent_results;
+    const recentResults = user.profile.recent.find(result => {
+        return result.level === user.profile.current_level;
+    });
 
     const goNext = e => {
         console.log("next");

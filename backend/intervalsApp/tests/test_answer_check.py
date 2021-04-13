@@ -58,5 +58,5 @@ class AnswerCheckTests(TestCase):
                              'first_note': '1',
                              'second_note': '2'},
                 'guess': '2'}
-        response = client.post(reverse('answer_check'), data, format='json')
+        response = self.client.post(reverse('answer_check'), data, format='json')
         self.assertEqual(400, response.status_code)

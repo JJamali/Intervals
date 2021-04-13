@@ -10,7 +10,7 @@ const RecentResults = ({recentResults, height=16}) => {
 
     return (
         <div style={{ display: "flex", flexDirection: "row", overflow: "hidden", borderRadius: height, border: "solid", borderWidth: 1 }}>
-            {recentResults.map((r, i) => {
+            {recentResults.recent_results.map((r, i) => {
                 const color = r ? "green" : "white";
                 const borderLeft = (i === 0) ? "" : "1px solid black";
                 return (
