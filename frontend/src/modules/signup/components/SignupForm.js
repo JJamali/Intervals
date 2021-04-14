@@ -9,7 +9,7 @@ export default function SignupForm() {
         <>
             {loggedIn ? <Redirect to="/" /> :
             <form onSubmit={handleSubmit}>
-                <h4>Sign up In</h4>
+                <h4>Sign up</h4>
                 <label>
                     Username:
                     <input type="text" name="username" value={username} onChange={handleChange} />
