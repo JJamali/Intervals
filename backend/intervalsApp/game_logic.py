@@ -27,6 +27,7 @@ def handle_answer(user: User, correct):
     # Level up user logic
 
     # If level being done is user's level
+    # This means that if the user went to a previous level, they would not level up instantly
     if current_user.level == current_user.current_level:
         required_correct_rate = 80
         # If minimum amount of questions have been answered and correct
