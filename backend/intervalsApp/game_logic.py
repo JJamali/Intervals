@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, RecentResults
 from django.apps import apps
 
 SCORE_RANGE = apps.get_app_config('intervalsApp').SCORE_RANGE
@@ -41,6 +41,7 @@ def handle_answer(user: User, correct):
                 else:
                     current_user.level += 1
                     current_user.current_level = current_user.level
+                    RecentResults.objects.get_or_create(profile=current_user, level=current_user.level)
 
     recent_results.save()
     current_user.save()
