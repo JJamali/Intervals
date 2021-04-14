@@ -31,6 +31,7 @@ class TestLevelUp(TestCase):
 
         self.client.post(reverse('answer_check'), {'guess': incorrect_answer}, format='json')
 
+    # Test that user levels up with minimum amount of answers, all of which are correct
     def test_level_up(self):
         self.authenticate()
 
@@ -77,6 +78,7 @@ class TestLevelUp(TestCase):
 
         self.assertEqual(level, 0)
 
+    # Test that user does not level up with incorrect answers
     def test_20_incorrect(self):
         self.authenticate()
 
