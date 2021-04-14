@@ -45,6 +45,25 @@ class TestLevelUp(TestCase):
         self.assertEqual(level, 1)
         self.assertEqual(user.profile.current_level, 1)
 
+    # Test that user levels up with minimum amount of answers, with some incorrect answers
+    def test_level_up_with_minimum_score(self):
+        self.authenticate()
+
+        for x in range(apps.get_app_config('intervalsApp').SCORE_RANGE - 3):
+            self.send_correct_answer('testuser')
+
+        for x in range(3):
+            self.send_correct_answer('testuser')
+
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+
+        level = user.profile.level
+
+        self.assertEqual(level, 1)
+        self.assertEqual(user.profile.current_level, 1)
+
+    # Test that user does not level up before answering minimum amount of questions
     def test_not_level_up(self):
         self.authenticate()
 
@@ -102,3 +121,18 @@ class TestLevelUp(TestCase):
 
         second_recent_results = current_user.recent_results_at_level(current_user.current_level)
         self.assertNotEqual(recent_results, second_recent_results)
+
+    # Test that user does not level up when visiting previous levels
+    def test_level_up_on_previous_level(self):
+        self.authenticate()
+
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+
+        current_user = user.profile
+        current_user.level = 4
+        current_user.current_level = 2
+        for x in range(apps.get_app_config('intervalsApp').SCORE_RANGE + 10):
+            self.send_correct_answer('testuser')
+
+        self.assertEqual(current_user.current_level, 2)
