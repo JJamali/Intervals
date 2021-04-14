@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.apps import apps
+from intervalsApp.models import RecentResults
 
 
 class TestLevelUp(TestCase):
@@ -102,3 +103,17 @@ class TestLevelUp(TestCase):
 
         second_recent_results = current_user.recent_results_at_level(current_user.current_level)
         self.assertNotEqual(recent_results, second_recent_results)
+
+    def test_level_up_creates_recent_results(self):
+        """A level up should create an empty recent results object
+        for the new level"""
+        self.authenticate()
+
+        for x in range(apps.get_app_config('intervalsApp').SCORE_RANGE):
+            self.send_correct_answer('testuser')
+
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+
+        level_one_result = RecentResults.objects.get(profile=user.profile, level=1)
+        self.assertListEqual(level_one_result.recent_results, [])
