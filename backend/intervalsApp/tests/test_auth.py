@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 
 
-class LoginTests(TestCase):
+class AuthTests(TestCase):
 
     def setUp(self):
         User = get_user_model()

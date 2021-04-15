@@ -14,4 +14,3 @@ class UserTests(TestCase):
         first = User.objects.get(username='first')
 
         self.assertIsInstance(first.profile, IntervalsProfile)
-

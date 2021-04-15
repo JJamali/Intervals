@@ -51,10 +51,10 @@ class TestLevelUp(TestCase):
     def test_level_up_with_minimum_score(self):
         self.authenticate()
 
-        for x in range(apps.get_app_config('intervalsApp').SCORE_RANGE - 3):
+        for x in range(apps.get_app_config('intervalsApp').SCORE_RANGE - int(apps.get_app_config('intervalsApp').SCORE_RANGE / 20)):
             self.send_correct_answer('testuser')
 
-        for x in range(3):
+        for x in range(int(apps.get_app_config('intervalsApp').SCORE_RANGE / 20)):
             self.send_correct_answer('testuser')
 
         User = get_user_model()
