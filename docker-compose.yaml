@@ -7,7 +7,7 @@ services:
     build: ./nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./backend/static:/static
+      - ./backend/static:/django_static
     ports:
       - 80:80
     depends_on:
@@ -24,7 +24,7 @@ services:
     command: bash -c "python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/backend
-      - ./backend/static:/static
+      - ./backend/static:/django_static
     expose:
       - 8000
 
