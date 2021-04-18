@@ -10,12 +10,12 @@ import "./Quiz.css";
 
 const useStyles = makeStyles({
     root: {
-        width: 600,
-        backgroundColor: "blue",
+        width: "50vw",
     },
     quiz: {
         width: "80%",
-        margin: "auto"
+        margin: "auto",
+        marginBottom: 10,
     },
     correct: {
         width: "30px",
@@ -27,9 +27,6 @@ const useStyles = makeStyles({
         textAlign: "center",
         backgroundColor: "red",
     },
-    results: {
-        width: "auto"
-    }
 })
 
 export default function Quiz() {
@@ -53,7 +50,7 @@ export default function Quiz() {
                     <Button disabled={!answered} onClick={goNext}>NEXT</Button>
                 </Box>
             </Paper>
-            <RecentResults className={classes.results} recentResults={recentResults} />
+            <RecentResults recentResults={recentResults} />
         </div>
     );
 }
