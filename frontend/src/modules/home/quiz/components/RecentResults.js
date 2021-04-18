@@ -1,24 +1,73 @@
 import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { Paper, Grid, Divider } from "@material-ui/core";
+import clsx from "clsx";
 
 
-const RecentResults = ({recentResults, height=16}) => {
-    const numSegments = 20;
-    const width = 100 / numSegments;
-    // const count = recentResults.reduce((acc, curr) => acc + (curr ? 1 : 0), 0);
-    // const progress = 100 * count/20;
-    // console.log(recentResults);
+const useStyles = makeStyles({
+    paper: {
+        overflow: "hidden",
+        backgroundColor: "darkgray",
+        borderColor: "black",
+        borderWidth: 1,
+    },
+    item: {
+        width: props => `${props.segmentWidth}%`,
+    },
+    segment: {
+        width: "100%",
+        height: props => props.height,
+    },
+    correct: {
+        backgroundColor: "green",
+    },
+    incorrect: {
+        backgroundColor: "white",
+    },
+    empty: {
+        backgroundColor: "transparent",
+    },
+    divider: {
+        backgroundColor: "#222",
+    },
+})
+
+
+const RecentResults = ({recentResults, numSegments=20, height=16}) => {
+    const segmentWidth = 100 / numSegments;
+    const classes = useStyles({segmentWidth, height});
+
+    // extend results with nulls to have a length of numSegments
+    let extendedResults = [...recentResults.recent_results];
+    for (let i = 0; i < numSegments - recentResults.recent_results.length; i++) {
+        extendedResults.push(null);
+    }
 
     return (
-        <div style={{ display: "flex", flexDirection: "row", overflow: "hidden", borderRadius: height, border: "solid", borderWidth: 1 }}>
-            {recentResults.recent_results.map((r, i) => {
-                const color = r ? "green" : "white";
-                const borderLeft = (i === 0) ? "" : "1px solid black";
-                return (
-                    <div key={i} style={{ width: `${width}%`, background: color, height: height, borderLeft: borderLeft }} />
-                )
-            })}
-        </div>
+        <Paper elevation={3} className={classes.paper}>
+            <Grid container  direction="row" wrap="nowrap" height={height}>
+                {extendedResults.map((r, i) => {
+                    let cls;
+                    if (r === null) {
+                        cls = classes.empty;
+                    } else if (r) {
+                        cls = classes.correct;
+                    } else {
+                        cls = classes.incorrect;
+                    }
+                    return (
+                        <React.Fragment>
+                            {i !== 0 && <Divider orientation="vertical" flexItem className={classes.divider} />}
+                            <Grid item className={classes.item}>
+                                <Paper elevation={0} square className={clsx(classes.segment, cls)} />
+                            </Grid>
+                        </React.Fragment>
+                    );
+                })}
+            </Grid>
+        </Paper>
     );
 }
+
 
 export default RecentResults;
