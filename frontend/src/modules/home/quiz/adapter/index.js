@@ -10,3 +10,8 @@ export const answerCheck = (guess) => {
     console.log('data', data);
     return post("/api/intervals/answer_check/", data);
 };
+
+export const globalStats = () => {
+    return get("/api/intervals/global_stats/")
+        .then(response => response.data);
+}
