@@ -6,7 +6,7 @@ from .serializers import UserSerializer, UserSerializerWithToken
 from .question_generator import create_random_question
 from .game_logic import handle_answer
 from django.contrib.auth import authenticate, login
-from .models import Question, RecentResults
+from .models import Question, RecentResults, IntervalsProfile
 from django.contrib.auth import logout
 
 
@@ -108,10 +108,34 @@ def login_view(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-# Handles logging out.
+# Handles logging out
 # Throws no errors if user was not logged in
 @api_view(['POST'])
 def logout_view(request):
     logout(request)
     return Response(status=status.HTTP_200_OK)
     # Redirect to a success page.
+
+
+@api_view(['GET'])
+def global_stats(request):
+    """Returns global stats for user. Global stats are the user's stats across all levels.
+
+    Does not modify any data in database - model is not saved."""
+
+    if request.user.is_authenticated:
+        profile: IntervalsProfile = request.user.profile
+
+        global_correct = 0
+        global_answered = 0
+
+        for r in profile.all_recent_results().values():
+            global_correct += r.total_correct
+            global_answered += r.total_completed
+
+        print(global_correct, global_answered)
+
+        return Response({"global_correct": global_correct,
+                         "global_answered": global_answered},
+                        status=status.HTTP_201_CREATED)
+    return Response(status=status.HTTP_401_UNAUTHORIZED)

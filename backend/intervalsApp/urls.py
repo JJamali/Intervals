@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import current_user, UserList, question, answer_check, login_view, logout_view
+from .views import current_user, UserList, question, answer_check, login_view, logout_view, global_stats
 
 urlpatterns = [
     path('login/', login_view, name='login'),
@@ -7,5 +7,6 @@ urlpatterns = [
     path('current_user/', current_user, name='current_user'),
     path('users/', UserList.as_view()),
     path('question/', question, name='question'),
-    path('answer_check/', answer_check, name='answer_check')
+    path('answer_check/', answer_check, name='answer_check'),
+    path('global_stats/', global_stats, name='global_stats')
 ]

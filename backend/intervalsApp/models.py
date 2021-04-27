@@ -28,6 +28,19 @@ class IntervalsProfile(models.Model):
         recent_results, created = RecentResults.objects.get_or_create(profile=self, level=level)
         return recent_results
 
+    def all_recent_results(self):
+        """Returns a dictionary of this profile's RecentResults objects.
+
+        Dictionary maps RecentResults level to RecentResults object."""
+
+        results_queryset = RecentResults.objects.filter(profile=self)
+
+        results_dict = {}
+        for r in results_queryset:
+            results_dict[r.level] = r
+
+        return results_dict
+
 
 class Question(models.Model):
     # Has a 1-to-1 relationship with IntervalsProfile
