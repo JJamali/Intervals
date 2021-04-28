@@ -18,6 +18,7 @@ def current_user(request):
 
     if request.method == 'POST':
         if request.user.is_authenticated:
+            # Deserialization
             serializer = UserSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -26,8 +27,8 @@ def current_user(request):
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+    # Send frontend current user data
     if request.method == 'GET':
-        print('user', request.user)
         if request.user.is_authenticated:
             serializer = UserSerializer(request.user)
             return Response(serializer.data)
