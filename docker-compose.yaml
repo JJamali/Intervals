@@ -21,7 +21,7 @@ services:
     environment:
       HOST_LOCATION: "host.docker.internal"
     build: ./backend
-    command: bash -c "python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/backend
       - ./backend/django_static:/django_static
