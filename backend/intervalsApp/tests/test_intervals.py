@@ -4,7 +4,7 @@ from django.urls import reverse
 
 
 class CurrentUserTests(TestCase):
-    """Tests for intervals api"""
+    """Tests for intervals api."""
     def setUp(self):
         User = get_user_model()
         User.objects.create_user(username='testuser', password='123')
@@ -17,17 +17,44 @@ class CurrentUserTests(TestCase):
         return response.data['access']
 
     def test_get_current_user(self):
+        """Tests that a get request from the current_user endpoint return the correct data.
+
+        Checks for 200 response and all model fields."""
         self.authenticate('testuser', '123')
 
         response = self.client.get(reverse('current_user'))
         self.assertEqual(200, response.status_code)
+
+        expected_user = {'username': 'testuser',
+                         'profile': {'level': 0,
+                                     'current_level': 0,
+                                     'playback_speed': 'N',
+                                     'note_order': 'O',
+                                     'recent': [{'level': 0,
+                                                 'total_correct': 0,
+                                                 'total_completed': 0,
+                                                 'recent_results': []
+                                                 }]
+                                     }
+                         }
+
         user = response.data
-        self.assertEqual('testuser', user['username'])
+
+        self.maxDiff = None
+        self.assertDictEqual(expected_user, user)
 
     def test_get_current_user_invalid_credentials(self):
         self.authenticate('testuser', 'invalid')
         response = self.client.get(reverse('current_user'))
         self.assertEqual(401, response.status_code)
+
+    def test_settings_change(self):
+        self.authenticate('testuser', '123')
+        self.client.post(reverse('update_settings'), {'playback_speed': 'S'})
+
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+        self.assertEqual('S', user.profile.playback_speed)
 
 
 class QuestionTests(TestCase):
