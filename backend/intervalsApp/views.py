@@ -2,7 +2,7 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer, UserSerializerWithToken
+from .serializers import UserSerializer, UserSerializerWithToken, ProfileSerializer
 from .question_generator import create_random_question
 from .game_logic import handle_answer
 from django.contrib.auth import authenticate, login
@@ -138,4 +138,19 @@ def global_stats(request):
         return Response({"global_correct": global_correct,
                          "global_answered": global_answered},
                         status=status.HTTP_201_CREATED)
+    return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+def update_settings(request):
+    """Receives command from frontend to update a user's setting."""
+
+    if request.user.is_authenticated:
+        profile: IntervalsProfile = request.user.profile
+
+        serializer = ProfileSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     return Response(status=status.HTTP_401_UNAUTHORIZED)
