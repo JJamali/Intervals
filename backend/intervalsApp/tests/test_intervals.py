@@ -48,13 +48,31 @@ class CurrentUserTests(TestCase):
         response = self.client.get(reverse('current_user'))
         self.assertEqual(401, response.status_code)
 
-    def test_settings_change(self):
+    def test_settings_change_speed(self):
         self.authenticate('testuser', '123')
-        self.client.post(reverse('update_settings'), {'playback_speed': 'S'})
-
         User = get_user_model()
         user = User.objects.get(username='testuser')
+
+        # Change speed
+        self.client.post(reverse('update_settings'), {'playback_speed': 'S'})
         self.assertEqual('S', user.profile.playback_speed)
+
+        # Change to self
+        self.client.post(reverse('update_settings'), {'playback_speed': 'S'})
+        self.assertEqual('S', user.profile.playback_speed)
+
+    def test_settings_change_order(self):
+        self.authenticate('testuser', '123')
+        User = get_user_model()
+        user = User.objects.get(username='testuser')
+
+        # Change order
+        self.client.post(reverse('update_settings'), {'note_order': 'R'})
+        self.assertEqual('R', user.profile.note_order)
+
+        # Change to self
+        self.client.post(reverse('update_settings'), {'note_order': 'R'})
+        self.assertEqual('R', user.profile.note_order)
 
 
 class QuestionTests(TestCase):
