@@ -16,7 +16,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IntervalsProfile
-        fields = ['user', 'level', 'current_level', 'recent']
+        fields = ['level', 'current_level', 'recent', 'note_order', 'playback_speed']
+
+    def update(self, instance, validated_data):
+        instance.current_level = validated_data.get('current_level', instance.current_level)
+        instance.note_order = validated_data.get('note_order', instance.note_order)
+        instance.playback_speed = validated_data.get('playback_speed', instance.playback_speed)
+        instance.save()
+        return instance
 
 
 class UserSerializer(serializers.ModelSerializer):
