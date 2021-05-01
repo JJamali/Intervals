@@ -12,10 +12,6 @@ class CurrentUserTests(TestCase):
     def authenticate(self, username, password):
         self.client.post(reverse('login'), {'username': username, 'password': password})
 
-    def get_access_token(self, username, password):
-        response = self.client.post(reverse('token_obtain_pair'), {'username': username, 'password': password})
-        return response.data['access']
-
     def test_get_current_user(self):
         """Tests that a get request from the current_user endpoint return the correct data.
 
@@ -82,10 +78,6 @@ class QuestionTests(TestCase):
 
     def authenticate(self, username, password):
         self.client.post(reverse('login'), {'username': username, 'password': password})
-
-    def get_access_token(self, username, password):
-        response = self.client.post(reverse('token_obtain_pair'), {'username': username, 'password': password})
-        return response.data['access']
 
     def test_get_question(self):
         self.authenticate('testuser', '123')
