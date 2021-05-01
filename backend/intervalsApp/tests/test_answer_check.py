@@ -14,11 +14,6 @@ class AnswerCheckTests(TestCase):
 
     def test_check_correct_answer(self):
         self.authenticate()
-        # token = self.get_access_token('testuser', '123')
-        #
-        # client = APIClient()
-        # # Adds Authorization: header
-        # client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
 
         self.client.get(reverse('question'))
 
@@ -51,6 +46,7 @@ class AnswerCheckTests(TestCase):
 
     def test_invalid_data(self):
         self.authenticate()
+
         data = {'question': {'question': 'question prompt',
                              'answers': 'not a list',
                              'correct_answer': '1',
