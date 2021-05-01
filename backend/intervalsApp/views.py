@@ -2,7 +2,7 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer, UserSerializerWithToken, ProfileSerializer
+from .serializers import UserSerializer, ProfileSerializer
 from .question_generator import create_random_question
 from .game_logic import handle_answer
 from django.contrib.auth import authenticate, login
@@ -41,7 +41,8 @@ class UserList(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        serializer = UserSerializerWithToken(data=request.data)
+        """Creates a new user and logs them in"""
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             login(request, user)

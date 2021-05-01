@@ -142,22 +142,3 @@ REST_FRAMEWORK = {
 }
 
 
-# TODO: possibly remove
-JWT_AUTH = {
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'intervals.utils.my_jwt_response_handler'
-}
-
-# TODO: possibly remove
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-    'http://localhost:8000',
-    'http://localhost:80',
-    'http://localhost',
-)
-
-# Override default SimpleJWT settings
-# https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html
-SIMPLE_JWT = {
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
-}
