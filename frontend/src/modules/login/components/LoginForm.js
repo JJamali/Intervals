@@ -10,7 +10,6 @@ export default function LoginForm() {
         <>
             {loggedIn ? <Redirect to="/" /> :
             <form onSubmit={handleSubmit}>
-                <h4>Log In</h4>
                 <div>
                     <TextField type="text" name="username" label="Username" onChange={handleChange} />
                 </div>
