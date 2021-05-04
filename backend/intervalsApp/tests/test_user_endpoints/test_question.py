@@ -51,3 +51,10 @@ class TestQuestion(AuthenticateTestCase):
         self.assertIn('second_note', question)
         self.assertIn('answers', question)
         self.assertNotIn('correct_answer', question)
+
+    def test_get_question_previous_unanswered(self):
+        self.login('testuser', '1')
+        id = self.get_id('testuser')
+        self.client.post(reverse('question', kwargs={'id': id}))
+        response = self.client.post(reverse('question', kwargs={'id': id}))
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)

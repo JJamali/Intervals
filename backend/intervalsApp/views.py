@@ -109,6 +109,15 @@ class QuestionView(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.Cr
     def create(self, request, *args, **kwargs):
         user = User.objects.get(pk=kwargs.get('id'))
         self.check_object_permissions(request, user)
+
+        # Don't create a question if the previous question hasn't been answered
+        try:
+            question = user.profile.question
+            if not question.answered:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Question.DoesNotExist:
+            pass
+
         given_level = request.GET.get('level', default=user.profile.level)
 
         RecentResults.objects.get_or_create(profile=user.profile, level=given_level)
@@ -182,6 +191,7 @@ def logout_view(request):
     # Redirect to a success page.
 
 
+# TODO: remove
 @api_view(['GET'])
 def global_stats(request):
     """Returns global stats for user. Global stats are the user's stats across all levels.
@@ -206,6 +216,7 @@ def global_stats(request):
     return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
+# TODO: remove
 @api_view(['POST'])
 def update_settings(request):
     """Receives command from frontend to update a user's setting."""
