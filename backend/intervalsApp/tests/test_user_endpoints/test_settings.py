@@ -8,6 +8,7 @@ from django.test.client import MULTIPART_CONTENT
 
 User = get_user_model()
 
+
 # TODO: add tests for invalid settings
 class TestSettings(AuthenticateTestCase):
     def test_get_settings(self):
@@ -134,8 +135,8 @@ class TestSettings(AuthenticateTestCase):
         self.login(username, password)
         id = self.get_id(username)
 
-        self.client.patch(reverse('settings', kwargs={'id': id}), data=json.dumps(new_settings),
-                          content_type=MULTIPART_CONTENT)
+        return self.client.patch(reverse('settings', kwargs={'id': id}), data=json.dumps(new_settings),
+                                 content_type=MULTIPART_CONTENT)
 
     def test_change_current_level(self):
         new_settings = {'current_level': 1}
@@ -154,3 +155,66 @@ class TestSettings(AuthenticateTestCase):
         self.change_settings('testuser', '1', new_settings)
         user = User.objects.get(username='testuser')
         self.assertEqual('R', user.profile.note_order)
+
+    # Test changing settings to invalid values
+    def test_change_current_level_to_large_value(self):
+        """Current level cannot be changed above the user's level."""
+        user = User.objects.get(username='testuser')
+        old = user.profile.current_level
+
+        new_settings = {'current_level': user.profile.level + 1}
+
+        response = self.change_settings('testuser', '1', new_settings)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        user.refresh_from_db()
+        self.assertEqual(old, user.profile.current_level)
+
+    def test_change_current_level_to_negative_value(self):
+        """Current level cannot be set to a negative value."""
+        user = User.objects.get(username='testuser')
+        old = user.profile.current_level
+
+        new_settings = {'current_level': -1}
+
+        response = self.change_settings('testuser', '1', new_settings)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        user.refresh_from_db()
+        self.assertEqual(old, user.profile.current_level)
+
+    def test_change_speed_to_invalid_value(self):
+        user = User.objects.get(username='testuser')
+        old = user.profile.playback_speed
+
+        new_settings = {'playback_speed': 'Z'}
+
+        response = self.change_settings('testuser', '1', new_settings)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        user.refresh_from_db()
+        self.assertEqual(old, user.profile.playback_speed)
+
+    def test_change_note_order_to_invalid_value(self):
+        user = User.objects.get(username='testuser')
+        old = user.profile.note_order
+
+        new_settings = {'note_order': 'Z'}
+
+        response = self.change_settings('testuser', '1', new_settings)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        user.refresh_from_db()
+        self.assertEqual(old, user.profile.note_order)
+
+    def test_put_invalid_settings(self):
+        self.login('testuser', '1')
+        id = self.get_id('testuser')
+        old = self.client.get(reverse('settings', kwargs={'id': id})).data
+
+        new_settings = {
+            'current_level': -1,
+            'playback_speed': 'F',
+            'note_order': 'R',
+        }
+        response = self.client.put(reverse('settings', kwargs={'id': id}), data=json.dumps(new_settings),
+                                   content_type=MULTIPART_CONTENT)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        response = self.client.get(reverse('settings', kwargs={'id': id}))
+        self.assertDictEqual(old, response.data)
