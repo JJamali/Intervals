@@ -34,6 +34,7 @@ class TestQuestion(AuthenticateTestCase):
         self.assertIn('first_note', question)
         self.assertIn('second_note', question)
         self.assertIn('answers', question)
+        self.assertIn('answered', question)
         self.assertNotIn('correct_answer', question)
 
     def test_get_question_exists(self):
