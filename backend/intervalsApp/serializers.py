@@ -3,7 +3,6 @@ from .models import User, IntervalsProfile, RecentResults, Question
 import json
 
 
-# TODO: add validators to fields
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
@@ -39,6 +38,13 @@ class SettingsSerializer(serializers.ModelSerializer):
             setattr(instance, key, value)
         instance.save()
         return instance
+
+    def validate_current_level(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Current level cannot be negative")
+        if value > self.instance.level:
+            raise serializers.ValidationError("Current level cannot be higher than level")
+        return value
 
 
 class UserSerializer(serializers.ModelSerializer):

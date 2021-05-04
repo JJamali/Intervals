@@ -9,7 +9,6 @@ from django.test.client import MULTIPART_CONTENT
 User = get_user_model()
 
 
-# TODO: add tests for invalid settings
 class TestSettings(AuthenticateTestCase):
     def test_get_settings(self):
         id = self.get_id('testuser')
@@ -28,6 +27,7 @@ class TestSettings(AuthenticateTestCase):
         """Put a new settings object with all fields"""
         self.login('testuser', '1')
         id = self.get_id('testuser')
+        self.level_up('testuser')
         new_settings = {
             'current_level': 1,
             'playback_speed': 'F',
@@ -67,6 +67,7 @@ class TestSettings(AuthenticateTestCase):
         """Trying to update settings as wrong user"""
         self.login('testuser2', '2')
         id = self.get_id('testuser')
+        User.objects.get(pk=id).profile.level = 1
         new_settings = {
             'current_level': 1,
             'playback_speed': 'F',
@@ -82,6 +83,7 @@ class TestSettings(AuthenticateTestCase):
         """Put a new settings object with all fields"""
         self.login('testuser', '1')
         id = self.get_id('testuser')
+        self.level_up('testuser')
         new_settings = {
             'current_level': 1,
             'playback_speed': 'F',
@@ -97,6 +99,7 @@ class TestSettings(AuthenticateTestCase):
         """Settings objects that are missing fields should be rejected"""
         self.login('testuser', '1')
         id = self.get_id('testuser')
+        self.level_up('testuser')
         new_settings = {
             'current_level': 1,
         }
@@ -138,7 +141,13 @@ class TestSettings(AuthenticateTestCase):
         return self.client.patch(reverse('settings', kwargs={'id': id}), data=json.dumps(new_settings),
                                  content_type=MULTIPART_CONTENT)
 
+    def level_up(self, username):
+        profile = User.objects.get(username='testuser').profile
+        profile.level = 1
+        profile.save()
+
     def test_change_current_level(self):
+        self.level_up('testuser')
         new_settings = {'current_level': 1}
         self.change_settings('testuser', '1', new_settings)
         user = User.objects.get(username='testuser')
@@ -210,8 +219,8 @@ class TestSettings(AuthenticateTestCase):
 
         new_settings = {
             'current_level': -1,
-            'playback_speed': 'F',
-            'note_order': 'R',
+            'playback_speed': 'Z',
+            'note_order': 'Z',
         }
         response = self.client.put(reverse('settings', kwargs={'id': id}), data=json.dumps(new_settings),
                                    content_type=MULTIPART_CONTENT)
