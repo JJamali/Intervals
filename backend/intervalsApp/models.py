@@ -80,6 +80,8 @@ class Question(models.Model):
     first_note = models.IntegerField(default=0)
     second_note = models.IntegerField(default=0)
 
+    answered = models.BooleanField(default=False)
+
 
 class RecentResults(models.Model):
     # Each IntervalsProfile has a RecentResult for each level

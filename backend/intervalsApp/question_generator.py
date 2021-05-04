@@ -78,7 +78,8 @@ def create_random_question(user: User, given_level=None):
             'answers': answers,
             'correct_answer': correct_answer,
             'first_note': first_note,
-            'second_note': second_note
+            'second_note': second_note,
+            'answered': False,
         }
     )
 
