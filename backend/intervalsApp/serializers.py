@@ -6,7 +6,7 @@ import json
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = ['question_text', 'answers', 'first_note', 'second_note']
+        fields = ['question_text', 'answers', 'first_note', 'second_note', 'answered']
 
 
 class RecentResultsSerializer(serializers.ModelSerializer):
