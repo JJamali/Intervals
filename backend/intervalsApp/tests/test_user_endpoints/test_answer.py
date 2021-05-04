@@ -68,16 +68,28 @@ class TestAnswer(AuthenticateTestCase):
         expected = {'correct': False, 'correct_answer': correct_answer}
         self.assertDictEqual(expected, response.data)
 
+    def test_check_answer_question_twice(self):
+        """A question should only accept an answer once"""
+        self.login('testuser', '1')
+        self.create_question('testuser')
+
+        id = self.get_id('testuser')
+        self.client.post(reverse('answer', kwargs={'id': id}), data={'guess': ''})
+        response = self.client.post(reverse('answer', kwargs={'id': id}), data={'guess': ''})
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
 
 class TestLevelUp(AuthenticateTestCase):
     """Tests leveling up through answering questions."""
+
     def send_correct_answer(self, username):
         id = self.get_id(username)
         self.client.post(reverse('question', kwargs={'id': id}))
 
         user = User.objects.get(username=username)
         correct_answer = user.profile.question.correct_answer
-        self.client.post(reverse('answer', kwargs={'id': id}), data={'guess': correct_answer})
+        response = self.client.post(reverse('answer', kwargs={'id': id}), data={'guess': correct_answer})
+        assert response.status_code == 200
 
     def send_incorrect_answer(self, username):
         id = self.get_id(username)

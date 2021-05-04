@@ -142,6 +142,13 @@ class AnswerView(APIView):
         except Question.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+        # Reject the guess if the question has already been answered before
+        if current_question.answered:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            current_question.answered = True
+            current_question.save()
+
         correct = current_question.correct_answer == guess
 
         handle_answer(user, correct)
