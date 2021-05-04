@@ -100,23 +100,6 @@ class TestLevelUp(AuthenticateTestCase):
         self.assertEqual(level, 1)
         self.assertEqual(user.profile.current_level, 1)
 
-    # TODO: fix this test cause it's borked
-    def test_level_up_with_minimum_score(self):
-        """Test that user levels up with minimum amount of answers, with some incorrect answers."""
-        self.login('testuser', '1')
-
-        for _ in range(apps.get_app_config('intervalsApp').SCORE_RANGE - int(
-                apps.get_app_config('intervalsApp').SCORE_RANGE / 20)):
-            self.send_correct_answer('testuser')
-
-        for _ in range(int(apps.get_app_config('intervalsApp').SCORE_RANGE / 20)):
-            self.send_correct_answer('testuser')
-
-        user = User.objects.get(username='testuser')
-        level = user.profile.level
-        self.assertEqual(level, 1)
-        self.assertEqual(user.profile.current_level, 1)
-
     def test_not_level_up(self):
         """Test that user does not level up before answering minimum amount of questions."""
         self.login('testuser', '1')
