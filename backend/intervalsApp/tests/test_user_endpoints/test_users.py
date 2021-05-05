@@ -22,6 +22,10 @@ class TestUserCreation(AuthenticateTestCase):
     def test_user_create(self):
         response = self.client.post(reverse('user-list'), {'username': 'new', 'password': '3'})
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        response = self.login('new', '3')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
         # Ensure logged in
         response = self.client.get(reverse('current_user'))
         self.assertEqual(status.HTTP_200_OK, response.status_code)
