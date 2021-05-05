@@ -18,6 +18,16 @@ export function post(url, requestData) {
     const axios = returnAxiosInstance();
     return axios.post(url, requestData);
 }
+
+export function patch(url, requestData) {
+    const axios = returnAxiosInstance();
+    return axios.patch(url, requestData);
+}
+
+export function put(url, requestData) {
+    const axios = returnAxiosInstance();
+    return axios.put(url, requestData);
+}
 //
 // export function getAuthenticated(url, access) {
 //     const axios = returnAxiosInstance();
