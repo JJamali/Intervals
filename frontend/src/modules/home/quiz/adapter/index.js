@@ -1,17 +1,17 @@
 import { get, post } from "modules/app/xhr";
 
-export const getQuestion = () => {
-    return get("/api/intervals/question/")
+export const getQuestion = (id) => {
+    return get(`/api/intervals/users/${id}/question/`)
         .then(response => response.data);
 };
 
-export const answerCheck = (guess) => {
-    const data = {guess: guess};
-    console.log('data', data);
-    return post("/api/intervals/answer_check/", data);
-};
-
-export const globalStats = () => {
-    return get("/api/intervals/global_stats/")
+export const newQuestion = (id) => {
+    return post(`/api/intervals/users/${id}/question/`, {})
         .then(response => response.data);
 }
+
+export const answerCheck = (id, guess) => {
+    const data = {guess: guess};
+    console.log('data', data);
+    return post(`/api/intervals/users/${id}/answer/`, data);
+};

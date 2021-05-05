@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { UserContext } from "modules/app/context/UserContext.js";
-import { getQuestion, answerCheck } from "./adapter";
+import { getQuestion, newQuestion, answerCheck } from "./adapter";
 
 
 export default function QuizBl() {
@@ -14,7 +14,7 @@ export default function QuizBl() {
         const guess = e.currentTarget.value;
         console.log(e);
         console.log("Submitting", guess);
-        answerCheck(guess)
+        answerCheck(user.id, guess)
             .then(res => {
                 console.log("submit response", res);
                 refreshUserData();
@@ -24,20 +24,38 @@ export default function QuizBl() {
         e.preventDefault();
     };
 
+    const getNewQuestion = () => {
+        newQuestion(user.id).then(response => {
+            console.log('new question', response);
+            getQuestion(user.id).then(question => {
+                console.log('setting question', question);
+                setQuestion(question);
+            });
+        });
+    }
+
     const updateQuestion = () => {
-        getQuestion().then(question => {
-            console.log('got question', question);
-            setQuestion(question);
+        // get the current question from backend and get a new question if needed
+        getQuestion(user.id).then(question => {
+            console.log(question);
+            if (question.answered) {
+                getNewQuestion();
+            } else {
+                console.log('setting question', question);
+                setQuestion(question);
+            }
+        }).catch(error => {
+            if (error.response.status === 404) {
+                getNewQuestion();
+            } else {
+                console.log(error);
+            }
         });
     };
     useEffect(() => {
+        console.log("Firing");
         updateQuestion();
     }, []);
-
-    // const recentResults = user.profile.recent_results;
-    const recentResults = user.profile.recent.find(result => {
-        return result.level === user.profile.current_level;
-    });
 
     const goNext = e => {
         console.log("next");
@@ -45,5 +63,5 @@ export default function QuizBl() {
         updateQuestion();
     }
 
-    return { question, recentResults, handleSubmit, correctAnswer, answered, goNext };
+    return { question, handleSubmit, correctAnswer, answered, goNext };
 }

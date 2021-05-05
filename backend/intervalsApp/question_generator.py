@@ -2,6 +2,7 @@ from rest_framework import serializers
 import random
 from .models import User, Question
 from .level_design import generate_answers
+from .serializers import QuestionSerializer
 
 
 # Assumes that when note = 0, A is the note in question. Similarly, G refers to index 11
@@ -77,7 +78,8 @@ def create_random_question(user: User, given_level=None):
             'answers': answers,
             'correct_answer': correct_answer,
             'first_note': first_note,
-            'second_note': second_note
+            'second_note': second_note,
+            'answered': False,
         }
     )
 
@@ -87,13 +89,3 @@ def create_random_question(user: User, given_level=None):
     # Save to database
     random_question.save()
     return serializer.data
-
-
-class QuestionSerializer(serializers.Serializer):
-    question_text = serializers.CharField(max_length=20)
-    answers = serializers.ListField(child=serializers.CharField(max_length=20))
-    first_note = serializers.IntegerField(min_value=0)
-    second_note = serializers.IntegerField(min_value=0)
-
-    def create(self, validated_data):
-        return Question(**validated_data)

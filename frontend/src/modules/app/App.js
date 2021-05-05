@@ -28,7 +28,7 @@ class App extends Component {
                                     <Login />
                                 </Route>
                                 <Route path="/signup">
-                                    <Signup setToken={this.setToken} />
+                                    <Signup />
                                 </Route>
                             </Switch>
                         </UserProvider>

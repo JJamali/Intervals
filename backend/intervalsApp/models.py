@@ -20,6 +20,34 @@ class IntervalsProfile(models.Model):
     level = models.IntegerField(default=0)
     current_level = models.IntegerField(default=0)  # Level the user is currently viewing/on
 
+    class PlaybackSpeed(models.TextChoices):
+        """Uses Django enumeration type to nicely define playback speed choices.
+
+        https://docs.djangoproject.com/en/3.0/ref/models/fields/#enumeration-types"""
+        SLOW = 'S'
+        NORMAL = 'N'
+        FAST = 'F'
+
+    playback_speed = models.CharField(
+        max_length=1,
+        choices=PlaybackSpeed.choices,
+        default=PlaybackSpeed.NORMAL
+    )
+
+    class NoteOrder(models.TextChoices):
+        """Uses Django enumeration type to nicely define note order choices.
+
+        https://docs.djangoproject.com/en/3.0/ref/models/fields/#enumeration-types"""
+        IN_ORDER = 'O'
+        BACKWARDS = 'B'
+        RANDOM = 'R'
+
+    note_order = models.CharField(
+        max_length=1,
+        choices=NoteOrder.choices,
+        default=NoteOrder.IN_ORDER
+    )
+
     def recent_results_at_level(self, level=None):
         # If no level is passed, the user's current level will be used
         if level is None:
@@ -51,6 +79,8 @@ class Question(models.Model):
     correct_answer = models.CharField(max_length=1000)
     first_note = models.IntegerField(default=0)
     second_note = models.IntegerField(default=0)
+
+    answered = models.BooleanField(default=False)
 
 
 class RecentResults(models.Model):

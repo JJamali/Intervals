@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from .models import User, IntervalsProfile, RecentResults
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
+from .models import User, IntervalsProfile, RecentResults, Question
+import json
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = ['question_text', 'answers', 'first_note', 'second_note', 'answered']
 
 
 class RecentResultsSerializer(serializers.ModelSerializer):
@@ -11,72 +15,61 @@ class RecentResultsSerializer(serializers.ModelSerializer):
         fields = ['level', 'total_correct', 'total_completed', 'recent_results']
 
 
-class ProfileSerializer(serializers.ModelSerializer):
+class StatsSerializer(serializers.ModelSerializer):
     recent = RecentResultsSerializer(many=True, read_only=True)
 
     class Meta:
         model = IntervalsProfile
-        fields = ['user', 'level', 'current_level', 'recent']
+        fields = ['level', 'recent']
 
 
-class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(required=False)
-
+class SettingsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['username', 'password', 'profile']
-        extra_kwargs = {"password": {'write_only': True}}
-
-    def create(self, validated_data):
-        print(validated_data)
-        profile_data = validated_data.pop('profile')
-        password = validated_data.pop('password')
-        # Create user
-        user = User.objects.create(**validated_data)
-        user.set_password(password)
-        user.save()
-        # Create profile
-        IntervalsProfile.objects.create(user=user, level=0)
-
-        return user
-
-
-class UserSerializerWithToken(serializers.ModelSerializer):
-    token = serializers.SerializerMethodField()
-    password = serializers.CharField(write_only=True)
-
-    def get_token(self, user):
-        refresh = RefreshToken.for_user(user)
-
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
+        model = IntervalsProfile
+        fields = ['current_level', 'note_order', 'playback_speed']
+        extra_kwargs = {
+            'current_level': {'required': True},
+            'note_order': {'required': True},
+            'playback_speed': {'required': True},
         }
 
-    def create(self, validated_data):
-        password = validated_data.pop('password', None)
-        instance = self.Meta.model(**validated_data)
-        if password is not None:
-            instance.set_password(password)
+    def update(self, instance, validated_data):
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
         instance.save()
         return instance
 
+    def validate_current_level(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Current level cannot be negative")
+        if value > self.instance.level:
+            raise serializers.ValidationError("Current level cannot be higher than level")
+        return value
+
+
+class UserSerializer(serializers.ModelSerializer):
+    stats = StatsSerializer(source='profile', required=True)
+    settings = SettingsSerializer(source='profile', required=True)
+
     class Meta:
         model = User
-        fields = ('token', 'username', 'password')
+        fields = ['username', 'password', 'stats', 'settings']
+        extra_kwargs = {"password": {'write_only': True}}
 
 
-# Allows for extraction of other important information along with token e.g. user information
-# Encodes non-username/password information in the access token
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+class BriefUserSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='pk', required=False)
 
-    # Customize the JWT response (the response, not the token) to include user information
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        data['user'] = UserSerializer(self.user).data
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'password']
+        read_only_fields = ['id']
+        extra_kwargs = {"password": {'write_only': True}}
 
-        return data
+    def create(self, validated_data):
+        password = validated_data['password']
+        user = User(username=validated_data['username'])
+        user.set_password(password)
+        user.save()
 
-
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+        return user

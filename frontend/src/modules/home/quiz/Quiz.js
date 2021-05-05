@@ -5,6 +5,7 @@ import QuizBl from "./bl.js";
 import Answers from "./components/Answers.js";
 import PlayButton from "./components/PlayButton.js";
 import RecentResults from "./components/RecentResults.js";
+import { UserContext } from "modules/app/context/UserContext.js";
 import "./Quiz.css";
 
 
