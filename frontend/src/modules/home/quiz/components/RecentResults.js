@@ -2,6 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Grid, Divider } from "@material-ui/core";
 import clsx from "clsx";
+import {UserContext} from "../../../app/context/UserContext";
 
 
 const useStyles = makeStyles({
@@ -33,13 +34,14 @@ const useStyles = makeStyles({
 })
 
 
-const RecentResults = ({recentResults, numSegments=20, height=16}) => {
+const RecentResults = ({numSegments=20, height=16}) => {
+    const { user } = React.useContext(UserContext);
     const segmentWidth = 100 / numSegments;
     const classes = useStyles({segmentWidth, height});
 
     // extend results with nulls to have a length of numSegments
-    let extendedResults = [...recentResults.recent_results];
-    for (let i = 0; i < numSegments - recentResults.recent_results.length; i++) {
+    let extendedResults = [...user.stats.recentResults.recent_results];
+    for (let i = 0; i < numSegments - user.stats.recentResults.recent_results.length; i++) {
         extendedResults.push(null);
     }
 
@@ -56,7 +58,7 @@ const RecentResults = ({recentResults, numSegments=20, height=16}) => {
                         cls = classes.incorrect;
                     }
                     return (
-                        <React.Fragment>
+                        <React.Fragment key={i}>
                             {i !== 0 && <Divider orientation="vertical" flexItem className={classes.divider} />}
                             <Grid item className={classes.item}>
                                 <Paper elevation={0} square className={clsx(classes.segment, cls)} />

@@ -4,7 +4,7 @@ import { login } from "../adapter";
 
 
 export default function LoginFormBl() {
-    const { loggedIn, refreshUserData } = React.useContext(UserContext);
+    const { getUserId, loggedIn } = React.useContext(UserContext);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loginFailed, setLoginFailed] = useState(false);
@@ -15,7 +15,7 @@ export default function LoginFormBl() {
             // good to log in
             console.log(response);
             setLoginFailed(false);
-            refreshUserData();
+            getUserId();
         }).catch(error => {
             // not good to log in :(
             console.log('error', error);
