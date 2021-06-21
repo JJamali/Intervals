@@ -17,7 +17,7 @@ Our next steps are implementing a cleaner UI:
 <img src="https://raw.githubusercontent.com/JJamali/Intervals/master/UI%20Concepts/Main%20Quiz%20Page.jpg" alt="future_design" width="80%"/>
 
 
-Made by: Jordan Jamali, Lukas Boelling
+Made by: Jordan Jamali, Lukas Boelling, Mahir Mir
 
 Level design: Richard Duan
 
