@@ -165,7 +165,6 @@ class AnswerView(APIView):
                         status=status.HTTP_200_OK)
 
 
-
 @api_view(['POST'])
 def login_view(request):
     if request.method == 'POST':

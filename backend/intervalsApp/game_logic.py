@@ -5,6 +5,11 @@ SCORE_RANGE = apps.get_app_config('intervalsApp').SCORE_RANGE
 
 
 def handle_answer(user: User, correct):
+    """
+    This function has two parts to it. First, it cycles the recent_results array,
+    removing the oldest response and adding the newest. Then, it decides whether or not to level up the user based on
+    the level they are currently viewing, and their score for the level.
+    """
     current_user = user.profile
     recent_results = current_user.recent_results_at_level(current_user.current_level)
 
@@ -26,7 +31,7 @@ def handle_answer(user: User, correct):
     # Level up user logic
 
     # If level being done is user's level
-    # This means that if the user went to a previous level, they would not level up instantly
+    # This means that if the user is currently using a previous level, they would not level up
     if current_user.level == current_user.current_level:
         required_correct_rate = 80
         # If minimum amount of questions have been answered and correct

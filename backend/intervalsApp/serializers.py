@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import User, IntervalsProfile, RecentResults, Question
-import json
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -10,6 +9,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class RecentResultsSerializer(serializers.ModelSerializer):
+    """Serializes recent results for the level that the user is currently on."""
     class Meta:
         model = RecentResults
         fields = ['level', 'total_correct', 'total_completed', 'recent_results']
@@ -24,6 +24,7 @@ class StatsSerializer(serializers.ModelSerializer):
 
 
 class SettingsSerializer(serializers.ModelSerializer):
+    """Serializes settings that pertain to user, such as level, note order, and speed."""
     class Meta:
         model = IntervalsProfile
         fields = ['current_level', 'note_order', 'playback_speed']

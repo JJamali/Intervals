@@ -1,7 +1,7 @@
 import random
 
 
-# In the form [scale degree, quality, semitones]
+# In the form: [scale degree, quality, semitones]
 
 major_dict = {
     2: [2, "Major", 2],
@@ -53,11 +53,14 @@ intervals_dict = {
 }
 
 
-# Manually define the difficulty of each level as difficulties cannot be generated, at least not reasonably
 # This function defines the difficulty of each level and generate_interval actually generates the answer
 def generate_answers(level):
-    # Cases by level
-    # Lists are in the form [interval number, quality, semitones]
+    """
+    Returns all options from a level and one random correct answer as a tuple. Each level is defined manually.
+    Lists are in the form [scale degree, quality, semitones].
+    This function defines the difficulty of each level and generate_interval actually generates the answer.
+    """
+
     if level == 0:
         interval_options = [intervals_dict["major"][3],
                             intervals_dict["perfect"][5],
