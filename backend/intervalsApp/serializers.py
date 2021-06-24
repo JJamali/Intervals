@@ -63,13 +63,24 @@ class BriefUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'password']
+        fields = ['id', 'username', 'password', 'is_guest']
         read_only_fields = ['id']
-        extra_kwargs = {"password": {'write_only': True}}
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'is_guest': {'write_only': True}
+        }
+
+    def to_representation(self, instance):
+        """Show 'Guest' as username if user is a guest."""
+        ret = super().to_representation(instance)
+        print(instance.is_guest)
+        if instance.is_guest:
+            ret['username'] = 'Guest'
+        return ret
 
     def create(self, validated_data):
-        password = validated_data['password']
-        user = User(username=validated_data['username'])
+        password = validated_data.pop('password')
+        user = User(**validated_data)
         user.set_password(password)
         user.save()
 

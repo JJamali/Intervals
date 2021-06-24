@@ -13,6 +13,7 @@ from .models import Question, RecentResults, IntervalsProfile
 import json
 from .permissions import IsItselfOrReadOnly, IsItself
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+import uuid
 
 User = get_user_model()
 
@@ -33,11 +34,34 @@ class UserList(generics.ListCreateAPIView):
     serializer_class = BriefUserSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer_class()(data=request.data)
+        if request.user.is_authenticated and request.user.is_guest:
+            pass
+        else:
+            serializer = self.get_serializer_class()(data=request.data)
+            if serializer.is_valid():
+                user = serializer.save()
+                login(request, user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateGuest(generics.CreateAPIView):
+    serializer_class = BriefUserSerializer
+
+    def create(self, request, *args, **kwargs):
+        random_id = str(uuid.uuid4())
+        data = {
+            'username': random_id,
+            'password': random_id,
+            'is_guest': True,
+        }
+        serializer = self.get_serializer_class()(data=data)
         if serializer.is_valid():
             user = serializer.save()
             login(request, user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print("invalid :(")
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -180,6 +204,12 @@ def login_view(request):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+def login_guest_view(request):
+    if request.method == 'POST':
+        pass
 
 
 # Handles logging out
