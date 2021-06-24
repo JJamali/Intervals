@@ -89,8 +89,7 @@ class GuestAuthTests(AuthenticateTestCase):
 
         # create new user account
         num_users = len(User.objects.all())
-        response = self.client.post(reverse('user-list'), {'username': 'new_user', 'password': 'pass'})
-        print(response.data)
+        self.client.post(reverse('user-list'), {'username': 'new_user', 'password': 'pass'})
 
         # check that the new user also has changed settings
         user = User.objects.get(username='new_user')
