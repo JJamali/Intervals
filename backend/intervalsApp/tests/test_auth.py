@@ -40,3 +40,16 @@ class AuthTests(AuthenticateTestCase):
     def test_current_user_logged_out(self):
         response = self.client.get(reverse('current_user'))
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
+
+
+class GuestAuthTests(AuthenticateTestCase):
+    def test_create_guest(self):
+        # make sure no guests exists initially
+        guests = list(User.objects.filter(is_guest=True))
+        self.assertEqual(1, len(guests))
+        # create a new guest
+        response = self.client.post(reverse('login_guest'))
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        # check that a guest was created
+        guests = list(User.objects.filter(is_guest=True))
+        self.assertEqual(1, len(guests))
