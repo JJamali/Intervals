@@ -174,7 +174,6 @@ def login_view(request):
         except KeyError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         user = authenticate(request, username=username, password=password)
-        print(user)
         if user is not None:
             login(request, user)
             return Response(status=status.HTTP_200_OK)
