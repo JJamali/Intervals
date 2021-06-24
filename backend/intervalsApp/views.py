@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework.views import APIView
-from .serializers import BriefUserSerializer, UserSerializer, StatsSerializer, SettingsSerializer
+from .serializers import BriefUserSerializer, UserSerializer, StatsSerializer, SettingsSerializer, \
+    ConvertGuestToUserSerializer
 from .question_generator import QuestionSerializer
 from .question_generator import create_random_question
 from .game_logic import handle_answer
@@ -35,7 +36,12 @@ class UserList(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         if request.user.is_authenticated and request.user.is_guest:
-            pass
+            serializer = ConvertGuestToUserSerializer(request.user, data=request.data)
+            if serializer.is_valid():
+                user = serializer.save()
+                login(request, user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             serializer = self.get_serializer_class()(data=request.data)
             if serializer.is_valid():
