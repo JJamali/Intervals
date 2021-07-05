@@ -11,7 +11,7 @@ import "./Quiz.css";
 import KeyboardEventHandler from 'react-keyboard-event-handler';
 
 
-const ComponentA = (props) => {
+const KeybindComponent = (props) => {
 
     const tryGoNext = () => {
         if (props.answered) {
@@ -59,7 +59,7 @@ export default function Quiz() {
 
     return (
         <div className={classes.root}>
-            <ComponentA answered={answered} goNext = {goNext} question ={question}/>
+            <KeybindComponent answered={answered} goNext={goNext} question={question}/>
             <Paper className={classes.quiz}>
                 <div className="quiz-header">
                     <div className="question-text">{question.question_text}</div>
