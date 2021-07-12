@@ -3,3 +3,4 @@ venv/
 node_modules/
 /.idea/
 /backend/django_static/
+/data/

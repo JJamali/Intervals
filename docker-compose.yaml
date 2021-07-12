@@ -27,6 +27,9 @@ services:
       - ./backend/django_static:/django_static
     expose:
       - 8000
+    depends_on:
+      - db
+      - redis
 
   # react frontend
   intervals-react:
@@ -42,3 +45,37 @@ services:
     expose:
       - 3000
     image: no-react
+
+  redis:
+    image: redis:alpine
+  celery:
+    build: ./backend
+    command: celery -A intervals worker -l info
+    volumes:
+      - ./backend/:/usr/src/app/
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=dbaa1_i7%*3r9-=z-+_mz4r-!qeed@(-a_r(g@k8jo8y3r27%m
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    depends_on:
+      - redis
+  celery-beat:
+    build: ./backend
+    command: celery -A intervals beat -l info
+    volumes:
+      - ./backend/:/usr/src/app/
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=dbaa1_i7%*3r9-=z-+_mz4r-!qeed@(-a_r(g@k8jo8y3r27%m
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    depends_on:
+      - redis
+
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
