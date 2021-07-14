@@ -48,7 +48,17 @@ class SettingsSerializer(serializers.ModelSerializer):
         return value
 
 
-class UserSerializer(serializers.ModelSerializer):
+class BaseUserSerializer(serializers.ModelSerializer):
+    """Provides behaviours that apply to all UserSerializers."""
+    def to_representation(self, instance):
+        """Show 'Guest' as username if user is a guest."""
+        ret = super().to_representation(instance)
+        if instance.is_guest:
+            ret['username'] = 'Guest'
+        return ret
+
+
+class UserSerializer(BaseUserSerializer):
     stats = StatsSerializer(source='profile', required=True)
     settings = SettingsSerializer(source='profile', required=True)
 
@@ -58,19 +68,37 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {'write_only': True}}
 
 
-class BriefUserSerializer(serializers.ModelSerializer):
+class BriefUserSerializer(BaseUserSerializer):
     id = serializers.IntegerField(source='pk', required=False)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'password']
+        fields = ['id', 'username', 'password', 'is_guest']
         read_only_fields = ['id']
-        extra_kwargs = {"password": {'write_only': True}}
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'is_guest': {'write_only': True}
+        }
 
     def create(self, validated_data):
-        password = validated_data['password']
-        user = User(username=validated_data['username'])
+        password = validated_data.pop('password')
+        user = User(**validated_data)
         user.set_password(password)
         user.save()
 
         return user
+
+
+class ConvertGuestToUserSerializer(BaseUserSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+        extra_kwargs = {"password": {'write_only': True}}
+
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('username')
+        instance.set_password(validated_data.get('password'))
+        instance.is_guest = False
+        instance.save()
+
+        return instance

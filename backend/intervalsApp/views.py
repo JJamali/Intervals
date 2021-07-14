@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework.views import APIView
-from .serializers import BriefUserSerializer, UserSerializer, StatsSerializer, SettingsSerializer
+from .serializers import BriefUserSerializer, UserSerializer, StatsSerializer, SettingsSerializer, \
+    ConvertGuestToUserSerializer
 from .question_generator import QuestionSerializer
 from .question_generator import create_random_question
 from .game_logic import handle_answer
@@ -13,6 +14,7 @@ from .models import Question, RecentResults, IntervalsProfile
 import json
 from .permissions import IsItselfOrReadOnly, IsItself
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+import uuid
 
 User = get_user_model()
 
@@ -33,11 +35,41 @@ class UserList(generics.ListCreateAPIView):
     serializer_class = BriefUserSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer_class()(data=request.data)
+        if request.user.is_authenticated and request.user.is_guest:
+            serializer = ConvertGuestToUserSerializer(request.user, data=request.data)
+            if serializer.is_valid():
+                user = serializer.save()
+                login(request, user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer_class()(data=request.data)
+            if serializer.is_valid():
+                user = serializer.save()
+                login(request, user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateGuest(generics.CreateAPIView):
+    serializer_class = BriefUserSerializer
+
+    def create(self, request, *args, **kwargs):
+        # Generate a random id to use as the username and password
+        # It's highly unlikely to generate a duplicate with a uuid4
+        random_id = str(uuid.uuid4())
+        data = {
+            'username': random_id,
+            'password': random_id,
+            'is_guest': True,
+        }
+        serializer = self.get_serializer_class()(data=data)
         if serializer.is_valid():
             user = serializer.save()
             login(request, user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print("invalid :(")
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -174,7 +206,6 @@ def login_view(request):
         except KeyError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         user = authenticate(request, username=username, password=password)
-        print(user)
         if user is not None:
             login(request, user)
             return Response(status=status.HTTP_200_OK)

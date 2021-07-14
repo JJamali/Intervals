@@ -10,7 +10,7 @@ from django.conf import settings
 
 
 class User(AbstractUser):
-    pass
+    is_guest = models.BooleanField(default=False)
 
 
 class IntervalsProfile(models.Model):
