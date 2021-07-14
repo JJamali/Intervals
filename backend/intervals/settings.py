@@ -127,7 +127,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-# USE_TZ = True
+# The project doesn't have any timezone-specific functionality so we can set this setting to False
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
