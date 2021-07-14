@@ -152,6 +152,7 @@ CELERY_RESULT_BACKEND = "redis://redis:6379"
 CELERY_BEAT_SCHEDULE = {
     "clear_old_guests": {
         "task": "intervals.tasks.clear_old_guests",
-        "schedule": crontab(minute="*/1"),
+        # Run daily at 8 AM - see https://crontab.guru/#0_8_*_*_*
+        "schedule": crontab(minute='0', hour='8'),
     },
 }
