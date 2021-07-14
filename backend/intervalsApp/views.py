@@ -55,6 +55,8 @@ class CreateGuest(generics.CreateAPIView):
     serializer_class = BriefUserSerializer
 
     def create(self, request, *args, **kwargs):
+        # Generate a random id to use as the username and password
+        # It's highly unlikely to generate a duplicate with a uuid4
         random_id = str(uuid.uuid4())
         data = {
             'username': random_id,
