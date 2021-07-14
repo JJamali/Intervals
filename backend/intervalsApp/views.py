@@ -213,12 +213,6 @@ def login_view(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-@api_view(['POST'])
-def login_guest_view(request):
-    if request.method == 'POST':
-        pass
-
-
 # Handles logging out
 # Throws no errors if user was not logged in
 @api_view(['POST'])
