@@ -3,3 +3,4 @@ backend/intervals/.env
 node_modules/
 /.idea/
 /backend/django_static/
+/data/

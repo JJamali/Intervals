@@ -14,6 +14,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 from datetime import timedelta
+from celery.schedules import crontab
+
+import intervals.tasks
 
 load_dotenv()
 
@@ -85,10 +88,10 @@ WSGI_APPLICATION = 'intervals.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['DB-NAME'],
-        'USER': os.environ['DB-USER'],
-        'PASSWORD': os.environ['DB-PASSWORD'],
-        'HOST': os.environ['HOST_LOCATION'],
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
         'PORT': 5432,
     }
 }
@@ -124,7 +127,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# The project doesn't have any timezone-specific functionality so we can set this setting to False
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -142,3 +146,13 @@ REST_FRAMEWORK = {
 }
 
 
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+CELERY_BEAT_SCHEDULE = {
+    "clear_old_guests": {
+        "task": "intervals.tasks.clear_old_guests",
+        # Run daily at 8 AM - see https://crontab.guru/#0_8_*_*_*
+        "schedule": crontab(minute='0', hour='8'),
+    },
+}

@@ -1,19 +1,27 @@
-from rest_framework import serializers
 import random
 from .models import User, Question
 from .level_design import generate_answers
 from .serializers import QuestionSerializer
 
 
-# Assumes that when note = 0, A is the note in question. Similarly, G refers to index 11
-# This calculates Hz values starting at A2 = 110Hz
 def note_to_frequency(note):
+    """
+    Assumes that when note = 0, A is the note in question. Similarly, G refers to index 11.
+    This calculates Hz values starting at A2 = 110Hz.
+    """
+
     # Frequency of A4 is 440Hz
     a = 440
     return (a / 4) * (2 ** (note / 12))
 
 
 def generate_interval(semitones):
+    """
+    Returns Hz values for two notes, making an interval.
+    The interval between the notes is determined by the semitones variable,
+    which is generated based on the user's level.
+    A range of three octaves is allowed (36 semitones).
+    """
     base_note_index = random.randrange(0, 36)
 
     base_note = note_to_frequency(base_note_index)
@@ -40,10 +48,12 @@ def convert_answer_to_string(answer):
     return output
 
 
-# Generates all data for a question
-# Saves correct_answer to Question model, to be referenced in answer_check later on
-# Serializes everything except correct_answer and sends to frontend
 def create_random_question(user: User, given_level=None):
+    """
+    Generates all data needed for one question. Saves correct_answer to the Question model,
+    which is needed for validation in answer_check once the user has given their answer. Once generated all data tied
+    to the question except correct_answer is serialized and saved to the database.
+    """
 
     question = "Identify the interval"
 
