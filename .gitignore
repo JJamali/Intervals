@@ -1,5 +1,5 @@
 venv/
-backend/intervals/.env
+**/.env
 node_modules/
 /.idea/
 /backend/django_static/
