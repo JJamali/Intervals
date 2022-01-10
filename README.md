@@ -10,7 +10,7 @@ A secret .env file (not shown on github) is used to conceal sensitive informatio
 
 Currently the quiz interface looks like this: 
 
-<img src="https://raw.githubusercontent.com/JJamali/Intervals/master/resources/quiz.png" alt="current_design" width="80%"/>
+<img src="https://raw.githubusercontent.com/JJamali/Intervals/master/resources/glengould.jpg" alt="current_design" width="80%"/>
 
 Our next steps are implementing a cleaner UI:
 
